@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useSpring, useInView, AnimatePresence } from 'framer-motion'
+import heroFallback from './assets/hero.png'
 
 const EarthGlobe = lazy(() => import('./EarthGlobe.jsx'))
 import {
@@ -77,6 +78,9 @@ const PHOTOS = {
   paros: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=800&q=80',
   naoussa: 'https://images.unsplash.com/photo-1602153920654-da37e87fb8c0?w=800&q=80',
 }
+
+const withFallbackBackground = (primary) =>
+  `url(${primary}), url(${heroFallback})`
 
 /* ────────────────────────────────────────────────────────────────
    GOOGLE MAPS LINKS
@@ -814,7 +818,7 @@ function DayBlock({ day, index, onOpen }) {
         >
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.04]"
-            style={{ backgroundImage: `url(${day.img})` }}
+            style={{ backgroundImage: withFallbackBackground(day.img) }}
           />
           <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[var(--color-ink)]/75 via-[var(--color-ink)]/30 to-transparent" />
           <div className="absolute top-5 left-5 flex items-center gap-2">
@@ -958,7 +962,7 @@ function JourneyModal({ day, onClose }) {
         <div className="relative h-56 md:h-72 overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center scale-110"
-            style={{ backgroundImage: `url(${day.img})` }}
+            style={{ backgroundImage: withFallbackBackground(day.img) }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-paper)] via-[var(--color-ink)]/30 to-[var(--color-ink)]/40" />
           <button
