@@ -420,15 +420,15 @@ export default function App() {
                 <span className="h-px flex-1 bg-[var(--color-line)]" />
               </div>
               <h1 className="font-serif text-[58px] md:text-[96px] leading-[0.92] tracking-[-0.03em] font-medium">
-                Athens
+                Greece
                 <br />
-                <span className="italic font-light text-[var(--color-clay)]">adventure</span>
+                <span className="italic font-light text-[var(--color-clay)]">with the Jarvis gang</span>
                 <span className="text-[var(--color-clay)]">.</span>
               </h1>
               <p className="mt-7 text-[17px] md:text-[19px] text-[var(--color-ink-soft)] leading-[1.55] max-w-xl">
-                Morning runs through ancient marble. Hilltop viewpoints at golden hour.
-                Coastal swims in turquoise water. The Acropolis up close, sunset dinners,
-                and the Aegean island connection.
+                A special Greece trip with the Jarvis gang — your parent’s girlfriend and the crew.
+                Ancient ruins in Athens, Riviera swims, sunset viewpoints, and island crossings
+                across the Aegean.
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <button
