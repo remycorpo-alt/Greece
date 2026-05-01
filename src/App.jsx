@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useSpring, useInView, AnimatePresence } from 'framer-motion'
+import heroFallback from './assets/hero.png'
 
 const EarthGlobe = lazy(() => import('./EarthGlobe.jsx'))
 import {
@@ -36,19 +37,20 @@ import {
    IMAGES
    ──────────────────────────────────────────────────────────────── */
 const IMG = {
-  hero: 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=2000&q=85',
-  heroAlt: 'https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?w=2000&q=85',
-  plaka: 'https://images.unsplash.com/photo-1603566541830-a1b9b5cca42f?w=1200&q=80',
-  acropolis: 'https://images.unsplash.com/photo-1571406252241-db0280bd38db?w=1200&q=80',
-  vouliagmeni: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80',
-  sounion: 'https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=1200&q=80',
-  mykonos: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=1200&q=80',
-  ferry: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1200&q=80',
-  map: 'https://images.unsplash.com/photo-1568454537842-d933259bb258?w=1600&q=80',
-  beach: 'https://images.unsplash.com/photo-1505881402582-c5bc11054f91?w=1600&q=85',
+  hero: 'https://images.unsplash.com/photo-1555993539-1732b0258235?auto=format&fit=crop&w=2000&q=85',
+  heroAlt: 'https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?auto=format&fit=crop&w=2000&q=85',
+  plaka: 'https://images.unsplash.com/photo-1555993539-1732b0258235?auto=format&fit=crop&w=1600&q=85',
+  acropolis: 'https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?auto=format&fit=crop&w=1600&q=85',
+  vouliagmeni: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1600&q=85',
+  sounion: 'https://images.unsplash.com/photo-1602940659805-770d1b3b9911?auto=format&fit=crop&w=1600&q=85',
+  mykonos: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?auto=format&fit=crop&w=1600&q=85',
+  ferry: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1600&q=85',
+  map: 'https://images.unsplash.com/photo-1568454537842-d933259bb258?auto=format&fit=crop&w=1600&q=85',
+  beach: 'https://images.unsplash.com/photo-1505881402582-c5bc11054f91?auto=format&fit=crop&w=1600&q=85',
 }
 
 const PHOTOS = {
+  fallback: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&q=80',
   airport: 'https://images.unsplash.com/photo-1556388158-158ea5ccacbd?w=800&q=80',
   airport2: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',
   plaka: 'https://images.unsplash.com/photo-1603566541830-a1b9b5cca42f?w=800&q=80',
@@ -77,6 +79,9 @@ const PHOTOS = {
   naoussa: 'https://images.unsplash.com/photo-1602153920654-da37e87fb8c0?w=800&q=80',
 }
 
+const withFallbackBackground = (primary) =>
+  `url(${primary}), url(${heroFallback})`
+
 /* ────────────────────────────────────────────────────────────────
    GOOGLE MAPS LINKS
    ──────────────────────────────────────────────────────────────── */
@@ -102,6 +107,10 @@ const MAPS = {
   monastiraki: 'https://maps.google.com/?q=Monastiraki+Flea+Market+Athens',
   naoussa: 'https://maps.google.com/?q=Naoussa+Paros+Greece',
   parosPort: 'https://maps.google.com/?q=Parikia+Port+Paros',
+  parosHotel: 'https://maps.google.com/?q=hotels+Naoussa+Paros',
+  parosTennis: 'https://maps.google.com/?q=tennis+club+Paros',
+  parosSpa: 'https://maps.google.com/?q=spa+Naoussa+Paros',
+  kolymbithres: 'https://maps.google.com/?q=Kolymbithres+Beach+Paros',
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -134,10 +143,11 @@ const DAYS = [
     title: 'Culture & the Acropolis',
     sub: 'Running, ruins, rooftop drinks',
     img: IMG.acropolis,
+    feature: false,
     dirUrl: 'https://www.google.com/maps/dir/National+Garden+Athens/Panathenaic+Stadium+Athens/Monastiraki+Square+Athens/Acropolis+Athens/Aerides+Restaurant+Plaka+Athens/Brettos+Bar+Athens',
     items: [
-      { time: '07:00', icon: Footprints, label: 'Morning run · 5–7 km', detail: 'National Garden → Panathenaic Stadium → Acropolis perimeter.', tag: 'Run', mapUrl: MAPS.stadium, photo: PHOTOS.stadium, place: 'Panathenaic Stadium' },
-      { time: '07:00', icon: Heart, label: "Yoga for Craig · Yoga Garden Athens", detail: 'Drop-in vinyasa class as an alternative to the run. Beautiful studio with rooftop sessions when it warms up — book the night before to confirm a spot.', tag: 'Yoga', mapUrl: MAPS.yoga, photo: PHOTOS.yoga, place: 'Yoga Garden, Athens' },
+      { time: '09:00', icon: Footprints, label: 'Morning run · 5–7 km', detail: 'National Garden → Panathenaic Stadium → Acropolis perimeter.', tag: 'Run', mapUrl: MAPS.stadium, photo: PHOTOS.stadium, place: 'Panathenaic Stadium' },
+      { time: '09:00', icon: Heart, label: "Yoga for Craig · Yoga Garden Athens", detail: 'Drop-in vinyasa class as an alternative to the run. Beautiful studio with rooftop sessions when it warms up — book the night before to confirm a spot.', tag: 'Yoga', mapUrl: MAPS.yoga, photo: PHOTOS.yoga, place: 'Yoga Garden, Athens' },
       { time: '09:30', icon: ShoppingBag, label: 'Monastiraki Flea Market', detail: 'Coffee, antiques, vintage finds and the lively Athenian morning. Browse the lanes around Avissinias Square — best on a Sunday.', tag: 'Market', mapUrl: MAPS.monastiraki, photo: PHOTOS.market, place: 'Monastiraki' },
       { time: '11:30', icon: Coffee, label: 'Brunch with a view', detail: 'Try A for Athens rooftop or Mama Roux for a relaxed late-morning bite before the afternoon climb.', tag: 'Food', mapUrl: 'https://maps.google.com/?q=A+for+Athens+rooftop', photo: PHOTOS.aerides, place: 'Monastiraki rooftops' },
       { time: '16:45', icon: Star, label: 'Acropolis guided tour', detail: 'Until 18:45. Booked. The museum can be a quick stop on the way up if you have time.', tag: 'Booked', mapUrl: MAPS.acropolisSite, photo: PHOTOS.acropolis, place: 'The Acropolis' },
@@ -150,17 +160,16 @@ const DAYS = [
     label: 'Day 03',
     date: 'May 4',
     weekday: 'Sunday',
-    title: 'The Athens Riviera',
-    sub: 'Mountain run · coastal swim · temple sunset',
-    img: IMG.beach,
-    feature: true,
-    dirUrl: 'https://www.google.com/maps/dir/Lycabettus+Hill+Athens/Athens+Riviera/Lake+Vouliagmeni/Vouliagmeni+Beach/Temple+of+Poseidon+Cape+Sounion',
+    title: 'Ferry to Paros & Island Reset',
+    sub: 'Morning crossing · hotel check-in · Naoussa sunset',
+    img: IMG.ferry,
+    dirUrl: 'https://www.google.com/maps/dir/Piraeus+Port/Parikia+Port+Paros/Naoussa+Paros',
     items: [
-      { time: '06:30', icon: Sunrise, label: 'Lycabettus Hill run / climb', detail: 'Highest point in Athens. Watch the city wake up.', tag: 'Run', mapUrl: MAPS.lycabettus, photo: PHOTOS.lycabettus, place: 'Lycabettus Hill' },
-      { time: 'Morning', icon: Waves, label: 'Drive the Athens Riviera', detail: 'Coastal road south towards Vouliagmeni.', tag: 'Scenic', mapUrl: 'https://maps.google.com/?q=Athens+Riviera', photo: PHOTOS.riviera, place: 'Athens Riviera' },
-      { time: 'Late AM', icon: Waves, label: 'Lake Vouliagmeni', detail: 'Thermal lake fed by underground springs. Swim or kayak.', tag: 'Swim', mapUrl: MAPS.vouliagmeni, photo: PHOTOS.vouliagmeni, place: 'Lake Vouliagmeni' },
-      { time: 'Noon', icon: Utensils, label: 'Seaside lunch on the Riviera', detail: 'Fresh fish, ouzo, and the open Aegean.', tag: 'Food', mapUrl: 'https://maps.google.com/?q=Vouliagmeni+seafood+restaurants', photo: PHOTOS.seafood, place: 'Riviera waterfront' },
-      { time: '16:00', icon: Sun, label: 'Temple of Poseidon · Cape Sounion', detail: 'The crown jewel. 65 km south of Athens. Arrive 45 min before sunset.', tag: 'Must-do', mapUrl: MAPS.sounion, photo: PHOTOS.sounion, place: 'Cape Sounion' },
+      { time: '07:00', icon: Ship, label: 'Ferry · Athens (Piraeus) → Paros', detail: 'Board the morning ferry from Piraeus and enjoy the Cyclades crossing.', tag: 'Ferry', mapUrl: MAPS.parosPort, photo: PHOTOS.ferry, place: 'Piraeus Port' },
+      { time: '13:00', icon: Hotel, label: 'Arrive Paros & hotel check-in', detail: 'Early afternoon arrival. Transfer to your hotel, drop bags, and settle in.', tag: 'Hotel', mapUrl: MAPS.parosHotel, photo: PHOTOS.hotel, place: 'Naoussa / Parikia' },
+      { time: '15:30', icon: Coffee, label: 'Late lunch by the harbour', detail: 'Relaxed first meal in Naoussa with sea views before afternoon exploring.', tag: 'Food', mapUrl: MAPS.naoussa, photo: PHOTOS.seafood, place: 'Naoussa Harbour' },
+      { time: '17:30', icon: MapPin, label: 'Naoussa old town walk', detail: 'Whitewashed lanes, Venetian fort, boutiques, and waterfront cafés.', tag: 'Scenic', mapUrl: MAPS.naoussa, photo: PHOTOS.naoussa, place: 'Naoussa, Paros' },
+      { time: '20:00', icon: Sun, label: 'Sunset aperitivo + dinner', detail: 'Easy first evening on Paros near the marina.', tag: 'Optional', mapUrl: MAPS.naoussa, photo: PHOTOS.paros, place: 'Naoussa waterfront' },
     ],
   },
   {
@@ -168,14 +177,15 @@ const DAYS = [
     label: 'Day 04',
     date: 'May 5',
     weekday: 'Monday',
-    title: 'Last Morning, Then the Ferry',
-    sub: 'Farewell Athens, hello Cyclades',
-    img: IMG.ferry,
-    dirUrl: 'https://www.google.com/maps/dir/Philopappos+Hill+Athens/Koukaki+Athens/Parikia+Port+Paros/Naoussa+Paros/Mykonos',
+    title: 'Paros Active Day → Ferry to Mykonos',
+    sub: 'Tennis · spa · beach time before sailing',
+    img: IMG.mykonos,
+    dirUrl: 'https://www.google.com/maps/dir/Naoussa+Paros/Kolymbithres+Beach+Paros/Parikia+Port+Paros/Mykonos+New+Port',
     items: [
-      { time: '06:00', icon: Sunrise, label: 'Sunrise run · 4–5 km', detail: 'Philopappos + Acropolis loop. Best light of the trip.', tag: 'Run', mapUrl: MAPS.philopappos, photo: PHOTOS.sunrise, place: 'Philopappos + Acropolis' },
-      { time: 'Morning', icon: Coffee, label: 'Breakfast in Koukaki or Plaka', detail: 'Last stroll through the neighbourhood before heading to the islands.', mapUrl: MAPS.koukaki, photo: PHOTOS.koukaki, place: 'Koukaki' },
-      { time: '13:30', icon: Anchor, label: 'Stroll through Naoussa, Paros', detail: 'Hop the early ferry/flight to Paros, then taxi 10 min to Naoussa — the prettiest fishing village in the Cyclades. Whitewashed alleys, octopus drying on the harbour, a lazy lunch by the Venetian fort. Easy way to spend the afternoon before the Mykonos crossing.', tag: 'Scenic', mapUrl: MAPS.naoussa, photo: PHOTOS.naoussa, place: 'Naoussa, Paros' },
+      { time: '08:00', icon: Coffee, label: 'Breakfast at the hotel', detail: 'Slow island morning before activities.', tag: 'Food', mapUrl: MAPS.parosHotel, photo: PHOTOS.hotel, place: 'Paros hotel' },
+      { time: '09:30', icon: Footprints, label: 'Tennis session', detail: 'Book a morning court for 60–90 minutes before the heat picks up.', tag: 'Run', mapUrl: MAPS.parosTennis, photo: PHOTOS.yoga, place: 'Paros tennis club' },
+      { time: '11:30', icon: Heart, label: 'Spa & recovery', detail: 'Massage / hammam session to reset before travel.', tag: 'Optional', mapUrl: MAPS.parosSpa, photo: PHOTOS.garden, place: 'Naoussa spa' },
+      { time: '14:00', icon: Waves, label: 'Kolymbithres Beach swim', detail: 'Short dip and final Cycladic beach time before heading to port.', tag: 'Swim', mapUrl: MAPS.kolymbithres, photo: PHOTOS.vouliagmeni, place: 'Kolymbithres Beach' },
       { time: '17:05', icon: Ship, label: 'Ferry · Paros → Mykonos', detail: 'Reference FH52UX3636VY. Hotel in Mykonos to book.', tag: 'Ferry', mapUrl: 'https://maps.google.com/?q=Mykonos+New+Port', photo: PHOTOS.ferry, place: 'Aegean crossing' },
     ],
   },
@@ -415,15 +425,15 @@ export default function App() {
                 <span className="h-px flex-1 bg-[var(--color-line)]" />
               </div>
               <h1 className="font-serif text-[58px] md:text-[96px] leading-[0.92] tracking-[-0.03em] font-medium">
-                Athens
+                Greece
                 <br />
-                <span className="italic font-light text-[var(--color-clay)]">adventure</span>
+                <span className="italic font-light text-[var(--color-clay)]">with the Jarvis gang</span>
                 <span className="text-[var(--color-clay)]">.</span>
               </h1>
               <p className="mt-7 text-[17px] md:text-[19px] text-[var(--color-ink-soft)] leading-[1.55] max-w-xl">
-                Morning runs through ancient marble. Hilltop viewpoints at golden hour.
-                Coastal swims in turquoise water. The Acropolis up close, sunset dinners,
-                and the Aegean island connection.
+                A special Greece trip with the Jarvis gang.
+                Ancient ruins in Athens, Riviera swims, sunset viewpoints, and island crossings
+                across the Aegean.
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <button
@@ -813,7 +823,7 @@ function DayBlock({ day, index, onOpen }) {
         >
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.04]"
-            style={{ backgroundImage: `url(${day.img})` }}
+            style={{ backgroundImage: withFallbackBackground(day.img) }}
           />
           <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[var(--color-ink)]/75 via-[var(--color-ink)]/30 to-transparent" />
           <div className="absolute top-5 left-5 flex items-center gap-2">
@@ -957,7 +967,7 @@ function JourneyModal({ day, onClose }) {
         <div className="relative h-56 md:h-72 overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center scale-110"
-            style={{ backgroundImage: `url(${day.img})` }}
+            style={{ backgroundImage: withFallbackBackground(day.img) }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-paper)] via-[var(--color-ink)]/30 to-[var(--color-ink)]/40" />
           <button
@@ -1085,17 +1095,17 @@ function Journey({ items }) {
 
               {/* Card */}
               <div className="bg-[var(--color-paper-2)] hover:bg-[var(--color-paper-3)]/60 transition-colors rounded-2xl border border-[var(--color-line)] overflow-hidden flex flex-col sm:flex-row">
-                {it.photo && (
-                  <div className="relative sm:w-44 md:w-52 flex-shrink-0 aspect-[4/3] sm:aspect-auto sm:min-h-[140px] overflow-hidden">
-                    <img
-                      src={it.photo}
-                      alt={it.label}
-                      loading="lazy"
-                      className="absolute inset-0 w-full h-full object-cover"
-                      onError={(e) => { e.currentTarget.style.display = 'none' }}
-                    />
-                  </div>
-                )}
+                <div className="relative sm:w-44 md:w-52 flex-shrink-0 aspect-[4/3] sm:aspect-auto sm:min-h-[140px] overflow-hidden">
+                  <img
+                    src={it.photo || PHOTOS.fallback}
+                    alt={it.label}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => {
+                      if (e.currentTarget.src !== PHOTOS.fallback) e.currentTarget.src = PHOTOS.fallback
+                    }}
+                  />
+                </div>
                 <div className="flex-1 p-4 md:p-5">
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
                     <span className="text-[11px] font-mono font-semibold text-[var(--color-clay-deep)] tabular-nums">
