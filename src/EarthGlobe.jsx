@@ -22,7 +22,12 @@ const STOPS = {
   beach:        { lat: 37.8175, lng: 23.7728, name: 'Vouliagmeni Beach' },
   sounion:      { lat: 37.6500, lng: 24.0250, name: 'Cape Sounion · Poseidon' },
   koukaki:      { lat: 37.9650, lng: 23.7237, name: 'Koukaki' },
-  paros:        { lat: 37.0853, lng: 25.1525, name: 'Paros Port' },
+  hotel:        { lat: 37.9656, lng: 23.7250, name: 'Hotel · Koukaki' },
+  kostas:       { lat: 37.9785, lng: 23.7311, name: 'Kostas Souvlaki' },
+  yoga:         { lat: 37.9760, lng: 23.7330, name: 'Yoga Garden Athens' },
+  monastiraki:  { lat: 37.9762, lng: 23.7257, name: 'Monastiraki' },
+  paros:        { lat: 37.0853, lng: 25.1525, name: 'Parikia Port' },
+  naoussa:      { lat: 37.1242, lng: 25.2356, name: 'Naoussa, Paros' },
   mykonos:      { lat: 37.4467, lng: 25.3289, name: 'Mykonos' },
   mykonosAir:   { lat: 37.4351, lng: 25.3486, name: 'Mykonos Airport' },
 }
@@ -38,7 +43,7 @@ const DAY_ROUTES = [
     color: '#5A8FA8',
     altitude: 0.95,
     centre: { lat: 42, lng: 15 },
-    stops: ['geneva', 'airport', 'plaka', 'philopappos', 'sense'],
+    stops: ['geneva', 'airport', 'hotel', 'kostas', 'plaka', 'philopappos', 'sense'],
     arcAlt: 0.2,
   },
   {
@@ -50,7 +55,7 @@ const DAY_ROUTES = [
     color: '#8B6FB8',
     altitude: 0.18,
     centre: { lat: 37.97, lng: 23.74 },
-    stops: ['garden', 'stadium', 'museum', 'acropolis', 'aerides', 'brettos'],
+    stops: ['yoga', 'stadium', 'monastiraki', 'acropolis', 'aerides', 'brettos'],
     arcAlt: 0.02,
   },
   {
@@ -75,7 +80,7 @@ const DAY_ROUTES = [
     color: '#6B7A4F',
     altitude: 0.55,
     centre: { lat: 37.7, lng: 24.5 },
-    stops: ['philopappos', 'koukaki', 'paros', 'mykonos'],
+    stops: ['philopappos', 'koukaki', 'paros', 'naoussa', 'mykonos'],
     arcAlt: 0.15,
   },
   {

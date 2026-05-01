@@ -26,6 +26,10 @@ import {
   X,
   ExternalLink,
   Route,
+  Hotel,
+  Heart,
+  ShoppingBag,
+  Anchor,
 } from 'lucide-react'
 
 /* ────────────────────────────────────────────────────────────────
@@ -41,6 +45,7 @@ const IMG = {
   mykonos: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=1200&q=80',
   ferry: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1200&q=80',
   map: 'https://images.unsplash.com/photo-1568454537842-d933259bb258?w=1600&q=80',
+  beach: 'https://images.unsplash.com/photo-1505881402582-c5bc11054f91?w=1600&q=85',
 }
 
 const PHOTOS = {
@@ -64,6 +69,12 @@ const PHOTOS = {
   koukaki: 'https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=800&q=80',
   ferry: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=800&q=80',
   mykonos: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=800&q=80',
+  hotel: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
+  souvlaki: 'https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?w=800&q=80',
+  yoga: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=800&q=80',
+  market: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=80',
+  paros: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=800&q=80',
+  naoussa: 'https://images.unsplash.com/photo-1602153920654-da37e87fb8c0?w=800&q=80',
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -85,6 +96,12 @@ const MAPS = {
   koukaki: 'https://maps.google.com/?q=Koukaki+Athens',
   fullRoute:
     'https://www.google.com/maps/dir/Acropolis+Athens/Philopappos+Hill+Athens/Lycabettus+Hill+Athens/Lake+Vouliagmeni/Temple+of+Poseidon+Cape+Sounion',
+  hotel: 'https://maps.google.com/?q=hotels+Koukaki+Athens',
+  kostas: 'https://maps.google.com/?q=Kostas+Souvlaki+Agia+Irini+Athens',
+  yoga: 'https://maps.google.com/?q=Yoga+Garden+Athens',
+  monastiraki: 'https://maps.google.com/?q=Monastiraki+Flea+Market+Athens',
+  naoussa: 'https://maps.google.com/?q=Naoussa+Paros+Greece',
+  parosPort: 'https://maps.google.com/?q=Parikia+Port+Paros',
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -99,9 +116,11 @@ const DAYS = [
     title: 'Arrival & First Steps',
     sub: 'Athens welcomes you home',
     img: IMG.plaka,
-    dirUrl: 'https://www.google.com/maps/dir/Athens+International+Airport/Plaka+Athens/Philopappos+Hill+Athens/Sense+Restaurant+Athens',
+    dirUrl: 'https://www.google.com/maps/dir/Athens+International+Airport/Koukaki+Athens/Kostas+Souvlaki+Agia+Irini+Athens/Plaka+Athens/Philopappos+Hill+Athens/Sense+Restaurant+Athens',
     items: [
       { time: '11:35', icon: Plane, label: 'Land at Athens Airport', detail: 'Aegean A3855 · Geneva → Athens', tag: 'Flight', mapUrl: MAPS.airport, photo: PHOTOS.airport, place: 'Eleftherios Venizelos' },
+      { time: '13:00', icon: Hotel, label: 'Check in to your Athens hotel', detail: 'Drop bags in Koukaki — your base for three Athens nights, ten minutes from the Acropolis.', tag: 'Hotel', mapUrl: MAPS.hotel, photo: PHOTOS.hotel, place: 'Koukaki, Athens' },
+      { time: '14:00', icon: Utensils, label: 'Souvlaki at Kostas', detail: "Tiny family-run grill on Agia Irini square — pork skewer in pita with paprika oil. Closes when sold out, so come hungry.", tag: 'Street food', mapUrl: MAPS.kostas, photo: PHOTOS.souvlaki, place: 'Kostas · Plateia Agias Irinis' },
       { time: 'PM', icon: MapPin, label: 'Plaka + Anafiotika walk', detail: 'Wander the oldest neighbourhood and the island village hidden on the Acropolis slope.', tag: 'Walk', mapUrl: MAPS.plaka, photo: PHOTOS.plaka, place: 'Plaka, Athens' },
       { time: '18:00', icon: Mountain, label: 'Philopappos Hill at sunset', detail: 'Golden hour with direct Acropolis views.', tag: 'Viewpoint', mapUrl: MAPS.philopappos, photo: PHOTOS.philopappos, place: 'Philopappos Hill' },
       { time: '19:00', icon: Utensils, label: 'Dinner at Sense', detail: 'Booked. Modern Greek cuisine.', tag: 'Booked', mapUrl: MAPS.sense, photo: PHOTOS.sense, place: 'Sense Restaurant' },
@@ -115,11 +134,13 @@ const DAYS = [
     title: 'Culture & the Acropolis',
     sub: 'Running, ruins, rooftop drinks',
     img: IMG.acropolis,
-    dirUrl: 'https://www.google.com/maps/dir/National+Garden+Athens/Panathenaic+Stadium+Athens/Acropolis+Museum+Athens/Acropolis+Athens/Aerides+Restaurant+Plaka+Athens/Brettos+Bar+Athens',
+    dirUrl: 'https://www.google.com/maps/dir/National+Garden+Athens/Panathenaic+Stadium+Athens/Monastiraki+Square+Athens/Acropolis+Athens/Aerides+Restaurant+Plaka+Athens/Brettos+Bar+Athens',
     items: [
       { time: '07:00', icon: Footprints, label: 'Morning run · 5–7 km', detail: 'National Garden → Panathenaic Stadium → Acropolis perimeter.', tag: 'Run', mapUrl: MAPS.stadium, photo: PHOTOS.stadium, place: 'Panathenaic Stadium' },
-      { time: 'Late AM', icon: Camera, label: 'Acropolis Museum', detail: 'World-class exhibition of Parthenon treasures.', tag: 'Culture', mapUrl: MAPS.acropolis, photo: PHOTOS.museum, place: 'Acropolis Museum' },
-      { time: '16:45', icon: Star, label: 'Acropolis guided tour', detail: 'Until 18:45. Booked.', tag: 'Booked', mapUrl: MAPS.acropolisSite, photo: PHOTOS.acropolis, place: 'The Acropolis' },
+      { time: '07:00', icon: Heart, label: "Yoga for Craig · Yoga Garden Athens", detail: 'Drop-in vinyasa class as an alternative to the run. Beautiful studio with rooftop sessions when it warms up — book the night before to confirm a spot.', tag: 'Yoga', mapUrl: MAPS.yoga, photo: PHOTOS.yoga, place: 'Yoga Garden, Athens' },
+      { time: '09:30', icon: ShoppingBag, label: 'Monastiraki Flea Market', detail: 'Coffee, antiques, vintage finds and the lively Athenian morning. Browse the lanes around Avissinias Square — best on a Sunday.', tag: 'Market', mapUrl: MAPS.monastiraki, photo: PHOTOS.market, place: 'Monastiraki' },
+      { time: '11:30', icon: Coffee, label: 'Brunch with a view', detail: 'Try A for Athens rooftop or Mama Roux for a relaxed late-morning bite before the afternoon climb.', tag: 'Food', mapUrl: 'https://maps.google.com/?q=A+for+Athens+rooftop', photo: PHOTOS.aerides, place: 'Monastiraki rooftops' },
+      { time: '16:45', icon: Star, label: 'Acropolis guided tour', detail: 'Until 18:45. Booked. The museum can be a quick stop on the way up if you have time.', tag: 'Booked', mapUrl: MAPS.acropolisSite, photo: PHOTOS.acropolis, place: 'The Acropolis' },
       { time: '19:30', icon: Utensils, label: 'Dinner at Aerides Plaka', detail: 'Booked. Acropolis views from your table.', tag: 'Booked', mapUrl: MAPS.aerides, photo: PHOTOS.aerides, place: 'Aerides Plaka' },
       { time: 'After', icon: Sparkles, label: 'Brettos Bar or rooftop drinks', detail: "Optional. Athens' oldest distillery is steps away.", tag: 'Optional', mapUrl: MAPS.brettos, photo: PHOTOS.brettos, place: 'Brettos Bar' },
     ],
@@ -131,7 +152,7 @@ const DAYS = [
     weekday: 'Sunday',
     title: 'The Athens Riviera',
     sub: 'Mountain run · coastal swim · temple sunset',
-    img: IMG.sounion,
+    img: IMG.beach,
     feature: true,
     dirUrl: 'https://www.google.com/maps/dir/Lycabettus+Hill+Athens/Athens+Riviera/Lake+Vouliagmeni/Vouliagmeni+Beach/Temple+of+Poseidon+Cape+Sounion',
     items: [
@@ -150,10 +171,11 @@ const DAYS = [
     title: 'Last Morning, Then the Ferry',
     sub: 'Farewell Athens, hello Cyclades',
     img: IMG.ferry,
-    dirUrl: 'https://www.google.com/maps/dir/Philopappos+Hill+Athens/Koukaki+Athens/Piraeus+Port/Mykonos',
+    dirUrl: 'https://www.google.com/maps/dir/Philopappos+Hill+Athens/Koukaki+Athens/Parikia+Port+Paros/Naoussa+Paros/Mykonos',
     items: [
       { time: '06:00', icon: Sunrise, label: 'Sunrise run · 4–5 km', detail: 'Philopappos + Acropolis loop. Best light of the trip.', tag: 'Run', mapUrl: MAPS.philopappos, photo: PHOTOS.sunrise, place: 'Philopappos + Acropolis' },
-      { time: 'Morning', icon: Coffee, label: 'Breakfast in Koukaki or Plaka', detail: 'Last stroll through the neighbourhood.', mapUrl: MAPS.koukaki, photo: PHOTOS.koukaki, place: 'Koukaki' },
+      { time: 'Morning', icon: Coffee, label: 'Breakfast in Koukaki or Plaka', detail: 'Last stroll through the neighbourhood before heading to the islands.', mapUrl: MAPS.koukaki, photo: PHOTOS.koukaki, place: 'Koukaki' },
+      { time: '13:30', icon: Anchor, label: 'Stroll through Naoussa, Paros', detail: 'Hop the early ferry/flight to Paros, then taxi 10 min to Naoussa — the prettiest fishing village in the Cyclades. Whitewashed alleys, octopus drying on the harbour, a lazy lunch by the Venetian fort. Easy way to spend the afternoon before the Mykonos crossing.', tag: 'Scenic', mapUrl: MAPS.naoussa, photo: PHOTOS.naoussa, place: 'Naoussa, Paros' },
       { time: '17:05', icon: Ship, label: 'Ferry · Paros → Mykonos', detail: 'Reference FH52UX3636VY. Hotel in Mykonos to book.', tag: 'Ferry', mapUrl: 'https://maps.google.com/?q=Mykonos+New+Port', photo: PHOTOS.ferry, place: 'Aegean crossing' },
     ],
   },
@@ -186,6 +208,10 @@ const TAG_STYLES = {
   Food:      'bg-[var(--color-clay)]/10 text-[var(--color-clay-deep)] border-[var(--color-clay)]/20',
   Swim:      'bg-cyan-500/10 text-cyan-700 border-cyan-500/20',
   'Must-do': 'bg-[var(--color-clay)] text-[var(--color-paper)] border-[var(--color-clay-deep)]',
+  Hotel:    'bg-[var(--color-azure)]/10 text-[var(--color-azure)] border-[var(--color-azure)]/25',
+  Yoga:     'bg-rose-500/10 text-rose-700 border-rose-500/25',
+  'Street food': 'bg-amber-500/15 text-amber-700 border-amber-500/30',
+  Market:   'bg-[var(--color-olive)]/10 text-[var(--color-olive)] border-[var(--color-olive)]/25',
 }
 
 /* ────────────────────────────────────────────────────────────────
