@@ -140,14 +140,33 @@ const HTMLPin = (color) => `
 export default function EarthGlobe() {
   const globeRef = useRef(null)
   const containerRef = useRef(null)
+  const transitionTimers = useRef([])
   const [size, setSize] = useState({ w: 640, h: 640 })
   const [activeId, setActiveId] = useState('d3')
   const [hasZoomed, setHasZoomed] = useState(false)
   const [routesVisible, setRoutesVisible] = useState(false)
+  const [transitioning, setTransitioning] = useState(false)
 
   const route = useMemo(() => DAY_ROUTES.find((d) => d.id === activeId), [activeId])
   const arcs = useMemo(() => (routesVisible ? buildArcs(route) : []), [route, routesVisible])
   const points = useMemo(() => (routesVisible ? buildPoints(route) : []), [route, routesVisible])
+
+  const clearTimers = () => {
+    transitionTimers.current.forEach(clearTimeout)
+    transitionTimers.current = []
+  }
+  const after = (ms, fn) => {
+    const t = setTimeout(fn, ms)
+    transitionTimers.current.push(t)
+    return t
+  }
+
+  const stopRotation = () => {
+    const g = globeRef.current
+    if (!g) return
+    const controls = g.controls()
+    controls.autoRotate = false
+  }
 
   /* Responsive sizing */
   useEffect(() => {
@@ -161,58 +180,93 @@ export default function EarthGlobe() {
     return () => ro.disconnect()
   }, [])
 
-  /* Cinematic intro: rotate, then zoom to Greece, then reveal routes */
+  /* Cinematic intro: rotate, fly to Greece, reveal routes */
   useEffect(() => {
     const g = globeRef.current
     if (!g) return
     const controls = g.controls()
     controls.autoRotate = true
-    controls.autoRotateSpeed = 0.8
+    controls.autoRotateSpeed = 0.7
     controls.enableZoom = false
+    controls.enableDamping = true
+    controls.dampingFactor = 0.15
 
     g.pointOfView({ lat: 20, lng: -40, altitude: 2.4 }, 0)
 
     const playIntro = () => {
       if (hasZoomed) return
       setHasZoomed(true)
-      controls.autoRotateSpeed = 1.4
-      setTimeout(() => {
+      const r = DAY_ROUTES.find((d) => d.id === activeId)
+
+      controls.autoRotateSpeed = 1.6
+      // 1) Pre-roll spin
+      after(1100, () => {
         controls.autoRotate = false
-        const r = DAY_ROUTES.find((d) => d.id === activeId)
-        g.pointOfView({ ...r.centre, altitude: r.altitude }, 3200)
-      }, 1200)
-      setTimeout(() => setRoutesVisible(true), 4400)
+        // 2) Cinematic fly: high pass → settle low
+        g.pointOfView({ lat: r.centre.lat + 6, lng: r.centre.lng, altitude: Math.max(r.altitude * 1.6, 1.2) }, 1700)
+      })
+      after(2700, () => {
+        g.pointOfView({ ...r.centre, altitude: r.altitude }, 1800)
+      })
+      // 3) Reveal arcs once we're settled
+      after(4500, () => setRoutesVisible(true))
     }
 
-    /* Trigger when in viewport */
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => e.isIntersecting && playIntro()),
       { threshold: 0.35 }
     )
     if (containerRef.current) io.observe(containerRef.current)
-    return () => io.disconnect()
-  }, [activeId, hasZoomed])
+    return () => {
+      io.disconnect()
+      clearTimers()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  /* Reframe when day changes */
+  /* Reframe on day change — hard stop rotation, fade arcs, pull back, zoom in, fade arcs back */
   useEffect(() => {
     if (!hasZoomed || !globeRef.current) return
-    globeRef.current.pointOfView({ ...route.centre, altitude: route.altitude }, 1600)
+    const g = globeRef.current
+    clearTimers()
+    stopRotation()
+    setTransitioning(true)
+    setRoutesVisible(false)
+
+    // Pull back slightly so the new framing reads
+    const lift = Math.max(route.altitude * 1.45, route.altitude + 0.25)
+    g.pointOfView({ lat: route.centre.lat, lng: route.centre.lng, altitude: lift }, 700)
+
+    after(750, () => {
+      g.pointOfView({ ...route.centre, altitude: route.altitude }, 1500)
+    })
+    after(2200, () => {
+      setRoutesVisible(true)
+      setTransitioning(false)
+    })
   }, [activeId, route, hasZoomed])
 
   const replay = () => {
+    clearTimers()
     setRoutesVisible(false)
+    setTransitioning(true)
     setHasZoomed(false)
     const g = globeRef.current
     if (!g) return
     const controls = g.controls()
     controls.autoRotate = true
-    g.pointOfView({ lat: 20, lng: -40, altitude: 2.4 }, 1500)
-    setTimeout(() => {
+    controls.autoRotateSpeed = 1.4
+    g.pointOfView({ lat: 20, lng: -40, altitude: 2.4 }, 1300)
+    after(1500, () => {
       setHasZoomed(true)
       controls.autoRotate = false
-      g.pointOfView({ ...route.centre, altitude: route.altitude }, 3000)
-      setTimeout(() => setRoutesVisible(true), 3200)
-    }, 1700)
+      g.pointOfView({ lat: route.centre.lat + 6, lng: route.centre.lng, altitude: Math.max(route.altitude * 1.6, 1.2) }, 1700)
+    })
+    after(3300, () => g.pointOfView({ ...route.centre, altitude: route.altitude }, 1700))
+    after(5100, () => {
+      setRoutesVisible(true)
+      setTransitioning(false)
+    })
   }
 
   return (
@@ -258,6 +312,22 @@ export default function EarthGlobe() {
           className="relative w-full rounded-3xl overflow-hidden border border-white/10 bg-[#06070A]"
           style={{ height: size.h }}
         >
+          {/* Vignette */}
+          <div
+            className="absolute inset-0 pointer-events-none z-[1]"
+            style={{
+              background:
+                'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)',
+            }}
+          />
+          {/* Top fade for overlay legibility */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none z-[1]"
+            style={{
+              background:
+                'linear-gradient(to top, rgba(6,7,10,0.55) 0%, transparent 100%)',
+            }}
+          />
           <Globe
             ref={globeRef}
             width={size.w}
@@ -266,41 +336,44 @@ export default function EarthGlobe() {
             globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
             bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
             atmosphereColor="#CC785C"
-            atmosphereAltitude={0.22}
+            atmosphereAltitude={0.25}
+            enablePointerInteraction={!transitioning}
             arcsData={arcs}
             arcColor="color"
-            arcStroke={0.55}
+            arcStroke={0.65}
             arcAltitude="arcAlt"
-            arcDashLength={0.45}
-            arcDashGap={0.18}
-            arcDashAnimateTime={2200}
-            arcsTransitionDuration={1000}
+            arcDashLength={0.5}
+            arcDashGap={0.2}
+            arcDashAnimateTime={2400}
+            arcDashInitialGap={(d, i) => i}
+            arcsTransitionDuration={500}
             pointsData={points}
             pointLat="lat"
             pointLng="lng"
             pointColor="color"
-            pointAltitude={0.012}
-            pointRadius={(d) => (d.isStart || d.isEnd ? 0.6 : 0.42)}
+            pointAltitude={0.014}
+            pointRadius={(d) => (d.isStart || d.isEnd ? 0.7 : 0.45)}
             pointLabel={(d) =>
               `${HTMLPin(route.color)}${String(d.idx).padStart(2, '0')} · ${d.name}</div>`
             }
-            pointsTransitionDuration={800}
-            ringsData={routesVisible ? points.filter((p) => p.isEnd) : []}
+            pointsTransitionDuration={600}
+            ringsData={routesVisible ? points : []}
             ringLat="lat"
             ringLng="lng"
-            ringColor={() => () => route.color}
-            ringMaxRadius={3}
-            ringPropagationSpeed={1.2}
-            ringRepeatPeriod={1600}
+            ringColor={(d) => () => d.color}
+            ringMaxRadius={(d) => (d.isStart || d.isEnd ? 3.2 : 1.6)}
+            ringPropagationSpeed={(d) => (d.isStart || d.isEnd ? 1.4 : 0.9)}
+            ringRepeatPeriod={(d) => (d.isStart || d.isEnd ? 1500 : 2400)}
+            ringAltitude={0.011}
           />
 
           {/* Active day overlay */}
           <motion.div
             key={route.id}
             initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={{ opacity: transitioning ? 0.55 : 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="absolute left-4 right-4 md:left-6 bottom-4 md:bottom-6 md:max-w-sm bg-[var(--color-ink)]/85 backdrop-blur-md border border-white/10 rounded-2xl p-4 md:p-5 pointer-events-none"
+            className="absolute left-4 right-4 md:left-6 bottom-4 md:bottom-6 md:max-w-sm bg-[var(--color-ink)]/85 backdrop-blur-md border border-white/10 rounded-2xl p-4 md:p-5 pointer-events-none z-[2]"
           >
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2 h-2 rounded-full" style={{ background: route.color }} />
@@ -320,13 +393,17 @@ export default function EarthGlobe() {
             </div>
           </motion.div>
 
-          {/* Loading hint */}
-          {!hasZoomed && (
-            <div className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-[0.2em] text-white/40 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-clay)] animate-pulse" />
-              Locating Greece…
-            </div>
-          )}
+          {/* Status hint */}
+          <div className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-[0.2em] text-white/45 flex items-center gap-1.5 z-[2]">
+            <span
+              className="w-1.5 h-1.5 rounded-full"
+              style={{
+                background: transitioning || !hasZoomed ? 'var(--color-clay)' : route.color,
+                animation: transitioning || !hasZoomed ? 'pulse 1.6s ease-in-out infinite' : 'none',
+              }}
+            />
+            {!hasZoomed ? 'Locating Greece…' : transitioning ? 'Reframing…' : 'Locked on'}
+          </div>
         </div>
 
         {/* Day toggle */}
