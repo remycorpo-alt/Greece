@@ -75,6 +75,7 @@ const PHOTOS = {
   market: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=80',
   paros: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=800&q=80',
   naoussa: 'https://images.unsplash.com/photo-1602153920654-da37e87fb8c0?w=800&q=80',
+  hammam: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -102,6 +103,8 @@ const MAPS = {
   monastiraki: 'https://maps.google.com/?q=Monastiraki+Flea+Market+Athens',
   naoussa: 'https://maps.google.com/?q=Naoussa+Paros+Greece',
   parosPort: 'https://maps.google.com/?q=Parikia+Port+Paros',
+  hammam: 'https://maps.google.com/?q=Al+Hammam+Baths+Plaka+Athens',
+  cycladic: 'https://maps.google.com/?q=Museum+of+Cycladic+Art+Athens',
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -140,6 +143,8 @@ const DAYS = [
       { time: '07:00', icon: Heart, label: "Yoga for Craig · Yoga Garden Athens", detail: 'Drop-in vinyasa class as an alternative to the run. Beautiful studio with rooftop sessions when it warms up — book the night before to confirm a spot.', tag: 'Yoga', mapUrl: MAPS.yoga, photo: PHOTOS.yoga, place: 'Yoga Garden, Athens' },
       { time: '09:30', icon: ShoppingBag, label: 'Monastiraki Flea Market', detail: 'Coffee, antiques, vintage finds and the lively Athenian morning. Browse the lanes around Avissinias Square — best on a Sunday.', tag: 'Market', mapUrl: MAPS.monastiraki, photo: PHOTOS.market, place: 'Monastiraki' },
       { time: '11:30', icon: Coffee, label: 'Brunch with a view', detail: 'Try A for Athens rooftop or Mama Roux for a relaxed late-morning bite before the afternoon climb.', tag: 'Food', mapUrl: 'https://maps.google.com/?q=A+for+Athens+rooftop', photo: PHOTOS.aerides, place: 'Monastiraki rooftops' },
+      { time: '13:30', icon: Camera, label: 'Option A — Acropolis Museum', detail: 'Two hours with the Parthenon sculptures before you climb the hill itself. The best context you can give yourself before the guided tour. Steps from the Acropolis entrance.', tag: 'Option A', mapUrl: MAPS.acropolis, photo: PHOTOS.museum, place: 'Acropolis Museum' },
+      { time: '13:30', icon: Sparkles, label: 'Option B — Hammam Al-Hammam', detail: 'A restored 19th-century Ottoman bath in Plaka. Book a 90-min traditional hammam session — scrub, foam massage, relaxation lounge. Perfect before the hill climb, especially for Craig. Reserve in advance.', tag: 'Option B', mapUrl: MAPS.hammam, photo: PHOTOS.hammam, place: 'Al-Hammam · Plaka' },
       { time: '16:45', icon: Star, label: 'Acropolis guided tour', detail: 'Until 18:45. Booked. The museum can be a quick stop on the way up if you have time.', tag: 'Booked', mapUrl: MAPS.acropolisSite, photo: PHOTOS.acropolis, place: 'The Acropolis' },
       { time: '19:30', icon: Utensils, label: 'Dinner at Aerides Plaka', detail: 'Booked. Acropolis views from your table.', tag: 'Booked', mapUrl: MAPS.aerides, photo: PHOTOS.aerides, place: 'Aerides Plaka' },
       { time: 'After', icon: Sparkles, label: 'Brettos Bar or rooftop drinks', detail: "Optional. Athens' oldest distillery is steps away.", tag: 'Optional', mapUrl: MAPS.brettos, photo: PHOTOS.brettos, place: 'Brettos Bar' },
@@ -212,6 +217,8 @@ const TAG_STYLES = {
   Yoga:     'bg-rose-500/10 text-rose-700 border-rose-500/25',
   'Street food': 'bg-amber-500/15 text-amber-700 border-amber-500/30',
   Market:   'bg-[var(--color-olive)]/10 text-[var(--color-olive)] border-[var(--color-olive)]/25',
+  'Option A': 'bg-violet-500/10 text-violet-700 border-violet-500/25',
+  'Option B': 'bg-teal-500/10 text-teal-700 border-teal-500/25',
 }
 
 /* ────────────────────────────────────────────────────────────────
