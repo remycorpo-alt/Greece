@@ -164,7 +164,7 @@ const DAYS = [
     img: IMG.ferry,
     dirUrl: 'https://www.google.com/maps/dir/Piraeus+Port/Parikia+Port+Paros/Naoussa+Paros',
     items: [
-      { time: '07:00', icon: Ship, label: 'Ferry · Athens (Piraeus) → Paros', detail: 'Board the morning ferry from Piraeus and enjoy the Cyclades crossing.', tag: 'Ferry', mapUrl: MAPS.parosPort, photo: PHOTOS.ferry, place: 'Piraeus Port' },
+      { time: '09:00', icon: Ship, label: 'Ferry · Athens (Piraeus) → Paros', detail: 'Board the morning ferry from Piraeus and enjoy the Cyclades crossing.', tag: 'Ferry', mapUrl: MAPS.parosPort, photo: PHOTOS.ferry, place: 'Piraeus Port' },
       { time: '13:00', icon: Hotel, label: 'Arrive Paros & hotel check-in', detail: 'Early afternoon arrival. Transfer to your hotel, drop bags, and settle in.', tag: 'Hotel', mapUrl: MAPS.parosHotel, photo: PHOTOS.hotel, place: 'Naoussa / Parikia' },
       { time: '15:30', icon: Coffee, label: 'Late lunch by the harbour', detail: 'Relaxed first meal in Naoussa with sea views before afternoon exploring.', tag: 'Food', mapUrl: MAPS.naoussa, photo: PHOTOS.seafood, place: 'Naoussa Harbour' },
       { time: '17:30', icon: MapPin, label: 'Naoussa old town walk', detail: 'Whitewashed lanes, Venetian fort, boutiques, and waterfront cafés.', tag: 'Scenic', mapUrl: MAPS.naoussa, photo: PHOTOS.naoussa, place: 'Naoussa, Paros' },
@@ -181,9 +181,9 @@ const DAYS = [
     img: IMG.mykonos,
     dirUrl: 'https://www.google.com/maps/dir/Naoussa+Paros/Kolymbithres+Beach+Paros/Parikia+Port+Paros/Mykonos+New+Port',
     items: [
-      { time: '08:00', icon: Coffee, label: 'Breakfast at the hotel', detail: 'Slow island morning before activities.', tag: 'Food', mapUrl: MAPS.parosHotel, photo: PHOTOS.hotel, place: 'Paros hotel' },
-      { time: '09:30', icon: Footprints, label: 'Tennis session', detail: 'Book a morning court for 60–90 minutes before the heat picks up.', tag: 'Run', mapUrl: MAPS.parosTennis, photo: PHOTOS.yoga, place: 'Paros tennis club' },
-      { time: '11:30', icon: Heart, label: 'Spa & recovery', detail: 'Massage / hammam session to reset before travel.', tag: 'Optional', mapUrl: MAPS.parosSpa, photo: PHOTOS.garden, place: 'Naoussa spa' },
+      { time: '09:00', icon: Coffee, label: 'Breakfast at the hotel', detail: 'Slow island morning before activities.', tag: 'Food', mapUrl: MAPS.parosHotel, photo: PHOTOS.hotel, place: 'Paros hotel' },
+      { time: '10:00', icon: Footprints, label: 'Tennis session', detail: 'Book a morning court for 60–90 minutes before the heat picks up.', tag: 'Run', mapUrl: MAPS.parosTennis, photo: PHOTOS.yoga, place: 'Paros tennis club' },
+      { time: '12:00', icon: Heart, label: 'Spa & recovery', detail: 'Massage / hammam session to reset before travel.', tag: 'Optional', mapUrl: MAPS.parosSpa, photo: PHOTOS.garden, place: 'Naoussa spa' },
       { time: '14:00', icon: Waves, label: 'Kolymbithres Beach swim', detail: 'Short dip and final Cycladic beach time before heading to port.', tag: 'Swim', mapUrl: MAPS.kolymbithres, photo: PHOTOS.vouliagmeni, place: 'Kolymbithres Beach' },
       { time: '17:05', icon: Ship, label: 'Ferry · Paros → Mykonos', detail: 'Reference FH52UX3636VY. Hotel in Mykonos to book.', tag: 'Ferry', mapUrl: 'https://maps.google.com/?q=Mykonos+New+Port', photo: PHOTOS.ferry, place: 'Aegean crossing' },
     ],
