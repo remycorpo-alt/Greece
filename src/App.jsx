@@ -49,6 +49,7 @@ const IMG = {
 }
 
 const PHOTOS = {
+  fallback: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&q=80',
   airport: 'https://images.unsplash.com/photo-1556388158-158ea5ccacbd?w=800&q=80',
   airport2: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',
   plaka: 'https://images.unsplash.com/photo-1603566541830-a1b9b5cca42f?w=800&q=80',
@@ -1085,17 +1086,17 @@ function Journey({ items }) {
 
               {/* Card */}
               <div className="bg-[var(--color-paper-2)] hover:bg-[var(--color-paper-3)]/60 transition-colors rounded-2xl border border-[var(--color-line)] overflow-hidden flex flex-col sm:flex-row">
-                {it.photo && (
-                  <div className="relative sm:w-44 md:w-52 flex-shrink-0 aspect-[4/3] sm:aspect-auto sm:min-h-[140px] overflow-hidden">
-                    <img
-                      src={it.photo}
-                      alt={it.label}
-                      loading="lazy"
-                      className="absolute inset-0 w-full h-full object-cover"
-                      onError={(e) => { e.currentTarget.style.display = 'none' }}
-                    />
-                  </div>
-                )}
+                <div className="relative sm:w-44 md:w-52 flex-shrink-0 aspect-[4/3] sm:aspect-auto sm:min-h-[140px] overflow-hidden">
+                  <img
+                    src={it.photo || PHOTOS.fallback}
+                    alt={it.label}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => {
+                      if (e.currentTarget.src !== PHOTOS.fallback) e.currentTarget.src = PHOTOS.fallback
+                    }}
+                  />
+                </div>
                 <div className="flex-1 p-4 md:p-5">
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
                     <span className="text-[11px] font-mono font-semibold text-[var(--color-clay-deep)] tabular-nums">
