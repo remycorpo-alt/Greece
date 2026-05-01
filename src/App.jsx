@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useSpring, useInView, AnimatePresence } from 'framer-motion'
+
+const EarthGlobe = lazy(() => import('./EarthGlobe.jsx'))
 import {
   Plane,
   Ship,
@@ -344,14 +346,15 @@ export default function App() {
           </a>
           <div className="hidden md:flex items-center gap-1">
             {[
-              ['Itinerary', itineraryRef],
-              ['Map', mapRef],
-              ['Logistics', logRef],
-              ['Tips', tipsRef],
-            ].map(([label, ref]) => (
+              ['Globe', () => document.getElementById('globe-anchor')?.scrollIntoView({ behavior: 'smooth' })],
+              ['Itinerary', () => itineraryRef.current?.scrollIntoView({ behavior: 'smooth' })],
+              ['Map', () => mapRef.current?.scrollIntoView({ behavior: 'smooth' })],
+              ['Logistics', () => logRef.current?.scrollIntoView({ behavior: 'smooth' })],
+              ['Tips', () => tipsRef.current?.scrollIntoView({ behavior: 'smooth' })],
+            ].map(([label, fn]) => (
               <button
                 key={label}
-                onClick={() => scrollTo(ref)}
+                onClick={fn}
                 className="text-[13px] font-medium text-[var(--color-ink-soft)] hover:text-[var(--color-clay)] px-3 py-1.5 rounded-full hover:bg-[var(--color-paper-2)] transition-colors"
               >
                 {label}
@@ -477,6 +480,21 @@ export default function App() {
           </motion.div>
         </div>
       </section>
+
+      {/* ── 3D GLOBE ── */}
+      <div id="globe-anchor" />
+      <Suspense
+        fallback={
+          <div className="bg-[var(--color-ink)] text-white/50 py-32 text-center">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-clay)] animate-pulse" />
+              Loading the planet…
+            </div>
+          </div>
+        }
+      >
+        <EarthGlobe />
+      </Suspense>
 
       {/* ── ITINERARY ── */}
       <section ref={itineraryRef} className="relative">
