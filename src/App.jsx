@@ -37,16 +37,16 @@ import {
    IMAGES
    ──────────────────────────────────────────────────────────────── */
 const IMG = {
-  hero: 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=2000&q=85',
-  heroAlt: 'https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?w=2000&q=85',
-  plaka: 'https://images.unsplash.com/photo-1603566541830-a1b9b5cca42f?w=1200&q=80',
-  acropolis: 'https://images.unsplash.com/photo-1571406252241-db0280bd38db?w=1200&q=80',
-  vouliagmeni: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80',
-  sounion: 'https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=1200&q=80',
-  mykonos: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=1200&q=80',
-  ferry: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1200&q=80',
-  map: 'https://images.unsplash.com/photo-1568454537842-d933259bb258?w=1600&q=80',
-  beach: 'https://images.unsplash.com/photo-1505881402582-c5bc11054f91?w=1600&q=85',
+  hero: 'https://images.unsplash.com/photo-1555993539-1732b0258235?auto=format&fit=crop&w=2000&q=85',
+  heroAlt: 'https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?auto=format&fit=crop&w=2000&q=85',
+  plaka: 'https://images.unsplash.com/photo-1555993539-1732b0258235?auto=format&fit=crop&w=1600&q=85',
+  acropolis: 'https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?auto=format&fit=crop&w=1600&q=85',
+  vouliagmeni: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1600&q=85',
+  sounion: 'https://images.unsplash.com/photo-1602940659805-770d1b3b9911?auto=format&fit=crop&w=1600&q=85',
+  mykonos: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?auto=format&fit=crop&w=1600&q=85',
+  ferry: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1600&q=85',
+  map: 'https://images.unsplash.com/photo-1568454537842-d933259bb258?auto=format&fit=crop&w=1600&q=85',
+  beach: 'https://images.unsplash.com/photo-1505881402582-c5bc11054f91?auto=format&fit=crop&w=1600&q=85',
 }
 
 const PHOTOS = {
