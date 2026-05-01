@@ -162,7 +162,6 @@ const DAYS = [
     title: 'Ferry to Paros & Island Reset',
     sub: 'Morning crossing · hotel check-in · Naoussa sunset',
     img: IMG.ferry,
-    feature: true,
     dirUrl: 'https://www.google.com/maps/dir/Piraeus+Port/Parikia+Port+Paros/Naoussa+Paros',
     items: [
       { time: '07:00', icon: Ship, label: 'Ferry · Athens (Piraeus) → Paros', detail: 'Board the morning ferry from Piraeus and enjoy the Cyclades crossing.', tag: 'Ferry', mapUrl: MAPS.parosPort, photo: PHOTOS.ferry, place: 'Piraeus Port' },
