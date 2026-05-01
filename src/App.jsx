@@ -12,6 +12,11 @@ import {
   Camera,
   Waves,
   Sun,
+  Cloud,
+  CloudRain,
+  CloudDrizzle,
+  CloudSnow,
+  CloudLightning,
   Mountain,
   Star,
   ChevronDown,
@@ -328,6 +333,103 @@ function TimelineItem({ time, icon: Icon, label, detail, tag, mapUrl, dark = fal
 }
 
 /* ────────────────────────────────────────────────────────────────
+   WEATHER WIDGET
+   ──────────────────────────────────────────────────────────────── */
+
+const WEATHER_LOCS = [
+  { id: 'd1', shortDate: 'Sat 2', city: 'Athens',  lat: 37.9838, lon: 23.7275, isoDate: '2026-05-02' },
+  { id: 'd2', shortDate: 'Sun 3', city: 'Athens',  lat: 37.9838, lon: 23.7275, isoDate: '2026-05-03' },
+  { id: 'd3', shortDate: 'Mon 4', city: 'Paros',   lat: 37.0856, lon: 25.1489, isoDate: '2026-05-04' },
+  { id: 'd4', shortDate: 'Tue 5', city: 'Paros',   lat: 37.0856, lon: 25.1489, isoDate: '2026-05-05' },
+  { id: 'd5', shortDate: 'Wed 6', city: 'Mykonos', lat: 37.4415, lon: 25.3677, isoDate: '2026-05-06' },
+]
+
+function wmoIconComponent(code) {
+  if (code === 0)  return Sun
+  if (code <= 3)   return Cloud
+  if (code <= 48)  return Wind
+  if (code <= 55)  return CloudDrizzle
+  if (code <= 82)  return CloudRain
+  if (code <= 77)  return CloudSnow
+  return CloudLightning
+}
+
+function WeatherWidget() {
+  const [days, setDays] = useState([])
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    const uniq = [
+      { city: 'Athens',  lat: 37.9838, lon: 23.7275 },
+      { city: 'Paros',   lat: 37.0856, lon: 25.1489 },
+      { city: 'Mykonos', lat: 37.4415, lon: 25.3677 },
+    ]
+    Promise.all(
+      uniq.map(({ city, lat, lon }) =>
+        fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+          `&daily=weathercode,temperature_2m_max,temperature_2m_min` +
+          `&timezone=Europe%2FAthens&start_date=2026-05-02&end_date=2026-05-06`
+        )
+          .then((r) => r.json())
+          .then((data) => ({ city, data }))
+      )
+    )
+      .then((results) => {
+        const byKey = {}
+        results.forEach(({ city, data }) => {
+          data.daily.time.forEach((date, i) => {
+            byKey[`${city}-${date}`] = {
+              code: data.daily.weathercode[i],
+              max: Math.round(data.daily.temperature_2m_max[i]),
+              min: Math.round(data.daily.temperature_2m_min[i]),
+            }
+          })
+        })
+        setDays(WEATHER_LOCS.map((d) => ({ ...d, w: byKey[`${d.city}-${d.isoDate}`] ?? null })))
+      })
+      .catch(() => setFailed(true))
+  }, [])
+
+  if (failed) return null
+
+  const slots = days.length ? days : WEATHER_LOCS
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, delay: 0.1 }}
+      className="mb-8 grid grid-cols-5 gap-2"
+    >
+      {slots.map((d) => {
+        const Icon = d.w ? wmoIconComponent(d.w.code) : null
+        return (
+          <div
+            key={d.id}
+            className="bg-[var(--color-paper-2)] border border-[var(--color-line)] rounded-xl px-2 py-3 flex flex-col items-center gap-1.5"
+          >
+            <span className="text-[9px] font-mono uppercase tracking-[0.12em] text-[var(--color-ink-muted)] truncate w-full text-center">
+              {d.city}
+            </span>
+            <div className="h-5 flex items-center justify-center">
+              {Icon
+                ? <Icon size={17} className="text-[var(--color-clay)]" strokeWidth={1.75} />
+                : <span className="block w-4 h-1.5 rounded bg-[var(--color-line)] animate-pulse" />
+              }
+            </div>
+            <span className="text-[13px] font-semibold text-[var(--color-ink)] leading-none tabular-nums">
+              {d.w ? `${d.w.max}°` : <span className="block w-5 h-1.5 rounded bg-[var(--color-line)] animate-pulse" />}
+            </span>
+            <span className="text-[9px] text-[var(--color-ink-muted)] tabular-nums">{d.shortDate}</span>
+          </div>
+        )
+      })}
+    </motion.div>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────
    APP
    ──────────────────────────────────────────────────────────────── */
 
@@ -426,6 +528,7 @@ export default function App() {
             className="grid md:grid-cols-12 gap-8 items-end"
           >
             <div className="md:col-span-7">
+              <WeatherWidget />
               <div className="flex items-center gap-3 mb-6">
                 <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-ink-muted)]">
                   Greece Trip · Spring 2026
