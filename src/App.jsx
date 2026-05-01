@@ -172,9 +172,9 @@ const DAYS = [
     items: [
       { time: '09:00', icon: Ship, label: 'Ferry · Athens (Piraeus) → Paros', detail: 'Board the 09:00 ferry from Piraeus and enjoy the Cyclades crossing.', tag: 'Ferry', mapUrl: MAPS.parosPort, photo: PHOTOS.ferry, place: 'Piraeus Port' },
       { time: '13:00', icon: Hotel, label: 'Check in · Andronis Minois Hotel', detail: 'Early afternoon arrival at the Andronis Minois (SLH Hotel) in Naoussa. Drop bags, take in the views, and settle in.', tag: 'Hotel', mapUrl: MAPS.parosHotel, photo: PHOTOS.hotel, place: 'Andronis Minois, Naoussa' },
-      { time: '14:30', icon: Footprints, label: 'Tennis session', detail: 'Quick hit on court while the afternoon is still fresh — 60 minutes should be plenty before the evening.', tag: 'Run', mapUrl: MAPS.parosTennis, photo: PHOTOS.yoga, place: 'Paros tennis club' },
-      { time: '16:30', icon: Coffee, label: 'Late lunch by the harbour', detail: 'Relaxed first meal in Naoussa with sea views before the evening stroll.', tag: 'Food', mapUrl: MAPS.naoussa, photo: PHOTOS.seafood, place: 'Naoussa Harbour' },
-      { time: '18:30', icon: MapPin, label: 'Naoussa old town walk', detail: 'Whitewashed lanes, Venetian fort, boutiques, and waterfront cafés.', tag: 'Scenic', mapUrl: MAPS.naoussa, photo: PHOTOS.naoussa, place: 'Naoussa, Paros' },
+      { time: '14:00', icon: Coffee, label: 'Late lunch at the hotel', detail: 'First meal on Paros without leaving the property — settle in properly before the afternoon.', tag: 'Food', mapUrl: MAPS.parosHotel, photo: PHOTOS.seafood, place: 'Andronis Minois, Naoussa' },
+      { time: '15:30', icon: Footprints, label: 'Tennis session', detail: 'Quick hit on court while the afternoon is still fresh — 60 minutes should be plenty before the evening.', tag: 'Run', mapUrl: MAPS.parosTennis, photo: PHOTOS.yoga, place: 'Paros tennis club' },
+      { time: '17:30', icon: MapPin, label: 'Naoussa old town walk', detail: 'Whitewashed lanes, Venetian fort, boutiques, and waterfront cafés.', tag: 'Scenic', mapUrl: MAPS.naoussa, photo: PHOTOS.naoussa, place: 'Naoussa, Paros' },
       { time: '20:00', icon: Sun, label: 'Sunset aperitivo + dinner', detail: 'Easy first evening on Paros near the marina.', tag: 'Optional', mapUrl: MAPS.naoussa, photo: PHOTOS.paros, place: 'Naoussa waterfront' },
     ],
   },
