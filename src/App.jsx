@@ -1,10 +1,9 @@
-import { useRef } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useScroll, useSpring, useInView, AnimatePresence } from 'framer-motion'
 import {
   Plane,
   Ship,
   MapPin,
-  Clock,
   Footprints,
   Utensils,
   Camera,
@@ -16,20 +15,37 @@ import {
   Info,
   Ticket,
   Wind,
+  Copy,
+  Check,
+  ArrowRight,
+  Sparkles,
+  Sunrise,
+  Coffee,
 } from 'lucide-react'
 
-const UNSPLASH = {
-  hero: 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=1920&q=80',
-  day2: 'https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?w=900&q=80',
-  day3: 'https://images.unsplash.com/photo-1571406252241-db0280bd38db?w=900&q=80',
-  day4: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&q=80',
-  day5: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=900&q=80',
-  day6: 'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=900&q=80',
-  map: 'https://images.unsplash.com/photo-1568454537842-d933259bb258?w=1200&q=80',
+/* ────────────────────────────────────────────────────────────────
+   IMAGES
+   ──────────────────────────────────────────────────────────────── */
+const IMG = {
+  hero: 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=2000&q=85',
+  heroAlt: 'https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?w=2000&q=85',
+  plaka: 'https://images.unsplash.com/photo-1603566541830-a1b9b5cca42f?w=1200&q=80',
+  acropolis: 'https://images.unsplash.com/photo-1571406252241-db0280bd38db?w=1200&q=80',
+  vouliagmeni: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80',
+  sounion: 'https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=1200&q=80',
+  mykonos: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=1200&q=80',
+  ferry: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1200&q=80',
+  map: 'https://images.unsplash.com/photo-1568454537842-d933259bb258?w=1600&q=80',
+  texture: 'https://images.unsplash.com/photo-1600783486019-2dd5cf6e1f6f?w=600&q=60',
 }
 
+/* ────────────────────────────────────────────────────────────────
+   GOOGLE MAPS LINKS
+   ──────────────────────────────────────────────────────────────── */
 const MAPS = {
+  airport: 'https://maps.google.com/?q=Athens+International+Airport',
   acropolis: 'https://maps.google.com/?q=Acropolis+Museum+Athens',
+  acropolisSite: 'https://maps.google.com/?q=Acropolis+Athens',
   philopappos: 'https://maps.google.com/?q=Philopappos+Hill+Athens',
   lycabettus: 'https://maps.google.com/?q=Lycabettus+Hill+Athens',
   vouliagmeni: 'https://maps.google.com/?q=Lake+Vouliagmeni+Athens',
@@ -41,728 +57,767 @@ const MAPS = {
   brettos: 'https://maps.google.com/?q=Brettos+Bar+Athens',
   koukaki: 'https://maps.google.com/?q=Koukaki+Athens',
   fullRoute:
-    'https://maps.google.com/?q=Acropolis+Athens&waypoints=Philopappos+Hill+Athens|Lycabettus+Hill+Athens|Lake+Vouliagmeni|Temple+of+Poseidon+Cape+Sounion',
+    'https://www.google.com/maps/dir/Acropolis+Athens/Philopappos+Hill+Athens/Lycabettus+Hill+Athens/Lake+Vouliagmeni/Temple+of+Poseidon+Cape+Sounion',
 }
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
+/* ────────────────────────────────────────────────────────────────
+   ITINERARY DATA
+   ──────────────────────────────────────────────────────────────── */
+const DAYS = [
+  {
+    id: 'd1',
+    label: 'Day 01',
+    date: 'May 2',
+    weekday: 'Friday',
+    title: 'Arrival & First Steps',
+    sub: 'Athens welcomes you home',
+    img: IMG.plaka,
+    items: [
+      { time: '11:35', icon: Plane, label: 'Land at Athens Airport', detail: 'Aegean A3855 · Geneva → Athens', tag: 'Flight', mapUrl: MAPS.airport },
+      { time: 'PM', icon: MapPin, label: 'Plaka + Anafiotika walk', detail: 'Wander the oldest neighbourhood and the island village hidden on the Acropolis slope.', tag: 'Walk', mapUrl: MAPS.plaka },
+      { time: '18:00', icon: Mountain, label: 'Philopappos Hill at sunset', detail: 'Golden hour with direct Acropolis views.', tag: 'Viewpoint', mapUrl: MAPS.philopappos },
+      { time: '19:00', icon: Utensils, label: 'Dinner at Sense', detail: 'Booked. Modern Greek cuisine.', tag: 'Booked', mapUrl: MAPS.sense },
+    ],
+  },
+  {
+    id: 'd2',
+    label: 'Day 02',
+    date: 'May 3',
+    weekday: 'Saturday',
+    title: 'Culture & the Acropolis',
+    sub: 'Running, ruins, rooftop drinks',
+    img: IMG.acropolis,
+    items: [
+      { time: '07:00', icon: Footprints, label: 'Morning run · 5–7 km', detail: 'National Garden → Panathenaic Stadium → Acropolis perimeter.', tag: 'Run', mapUrl: MAPS.stadium },
+      { time: 'Late AM', icon: Camera, label: 'Acropolis Museum', detail: 'World-class exhibition of Parthenon treasures.', tag: 'Culture', mapUrl: MAPS.acropolis },
+      { time: '16:45', icon: Star, label: 'Acropolis guided tour', detail: 'Until 18:45. Booked.', tag: 'Booked', mapUrl: MAPS.acropolisSite },
+      { time: '19:30', icon: Utensils, label: 'Dinner at Aerides Plaka', detail: 'Booked. Acropolis views from your table.', tag: 'Booked', mapUrl: MAPS.aerides },
+      { time: 'After', icon: Sparkles, label: 'Brettos Bar or rooftop drinks', detail: "Optional. Athens' oldest distillery is steps away.", tag: 'Optional', mapUrl: MAPS.brettos },
+    ],
+  },
+  {
+    id: 'd3',
+    label: 'Day 03',
+    date: 'May 4',
+    weekday: 'Sunday',
+    title: 'The Athens Riviera',
+    sub: 'Mountain run · coastal swim · temple sunset',
+    img: IMG.sounion,
+    feature: true,
+    items: [
+      { time: '06:30', icon: Sunrise, label: 'Lycabettus Hill run / climb', detail: 'Highest point in Athens. Watch the city wake up.', tag: 'Run', mapUrl: MAPS.lycabettus },
+      { time: 'Morning', icon: Waves, label: 'Drive the Athens Riviera', detail: 'Coastal road south towards Vouliagmeni.', tag: 'Scenic' },
+      { time: 'Late AM', icon: Waves, label: 'Lake Vouliagmeni', detail: 'Thermal lake fed by underground springs. Swim or kayak.', tag: 'Swim', mapUrl: MAPS.vouliagmeni },
+      { time: 'Noon', icon: Utensils, label: 'Seaside lunch on the Riviera', detail: 'Fresh fish, ouzo, and the open Aegean.', tag: 'Food' },
+      { time: '16:00', icon: Sun, label: 'Temple of Poseidon · Cape Sounion', detail: 'The crown jewel. 65 km south of Athens. Arrive 45 min before sunset.', tag: 'Must-do', mapUrl: MAPS.sounion },
+    ],
+  },
+  {
+    id: 'd4',
+    label: 'Day 04',
+    date: 'May 5',
+    weekday: 'Monday',
+    title: 'Last Morning, Then the Ferry',
+    sub: 'Farewell Athens, hello Cyclades',
+    img: IMG.ferry,
+    items: [
+      { time: '06:00', icon: Sunrise, label: 'Sunrise run · 4–5 km', detail: 'Philopappos + Acropolis loop. Best light of the trip.', tag: 'Run', mapUrl: MAPS.philopappos },
+      { time: 'Morning', icon: Coffee, label: 'Breakfast in Koukaki or Plaka', detail: 'Last stroll through the neighbourhood.', mapUrl: MAPS.koukaki },
+      { time: '17:05', icon: Ship, label: 'Ferry · Paros → Mykonos', detail: 'Reference FH52UX3636VY. Hotel in Mykonos to book.', tag: 'Ferry' },
+    ],
+  },
+  {
+    id: 'd5',
+    label: 'Day 05',
+    date: 'May 6',
+    weekday: 'Tuesday',
+    title: 'Mykonos → Geneva',
+    sub: 'Island morning, homeward flights',
+    img: IMG.mykonos,
+    items: [
+      { time: '08:55', icon: Plane, label: 'Mykonos → Athens', detail: 'Aegean Airlines A3373', tag: 'Flight' },
+      { time: '10:40', icon: Plane, label: 'Athens → Geneva', detail: 'EasyJet U21472. Athens Intl Airport.', tag: 'Flight', mapUrl: MAPS.airport },
+    ],
+  },
+]
+
+const TAG_STYLES = {
+  Flight:    'bg-[var(--color-azure)]/10 text-[var(--color-azure)] border-[var(--color-azure)]/20',
+  Ferry:     'bg-[var(--color-azure)]/10 text-[var(--color-azure)] border-[var(--color-azure)]/20',
+  Booked:    'bg-[var(--color-clay)]/15 text-[var(--color-clay-deep)] border-[var(--color-clay)]/30',
+  Run:       'bg-[var(--color-olive)]/15 text-[var(--color-olive)] border-[var(--color-olive)]/30',
+  Walk:      'bg-[var(--color-olive)]/10 text-[var(--color-olive)] border-[var(--color-olive)]/20',
+  Viewpoint: 'bg-amber-500/15 text-amber-700 border-amber-500/25',
+  Culture:   'bg-violet-500/10 text-violet-700 border-violet-500/20',
+  Optional:  'bg-[var(--color-ink)]/5 text-[var(--color-ink-muted)] border-[var(--color-ink)]/10',
+  Scenic:    'bg-sky-500/10 text-sky-700 border-sky-500/20',
+  Food:      'bg-[var(--color-clay)]/10 text-[var(--color-clay-deep)] border-[var(--color-clay)]/20',
+  Swim:      'bg-cyan-500/10 text-cyan-700 border-cyan-500/20',
+  'Must-do': 'bg-[var(--color-clay)] text-[var(--color-paper)] border-[var(--color-clay-deep)]',
 }
 
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
-}
+/* ────────────────────────────────────────────────────────────────
+   SMALL COMPONENTS
+   ──────────────────────────────────────────────────────────────── */
 
-function Tag({ children, color = 'blue' }) {
-  const colors = {
-    blue: 'bg-blue-100 text-blue-700',
-    green: 'bg-emerald-100 text-emerald-700',
-    amber: 'bg-amber-100 text-amber-800',
-    rose: 'bg-rose-100 text-rose-700',
-    purple: 'bg-purple-100 text-purple-700',
-    sky: 'bg-sky-100 text-sky-700',
-  }
+function Tag({ children }) {
+  const cls = TAG_STYLES[children] || TAG_STYLES.Optional
   return (
-    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${colors[color]}`}>
+    <span className={`text-[10px] font-semibold uppercase tracking-[0.08em] px-2 py-[3px] rounded-full border ${cls}`}>
       {children}
     </span>
   )
 }
 
-function TimelineItem({ time, icon: Icon, label, detail, tag, tagColor, mapUrl }) {
+function CopyChip({ value, label }) {
+  const [copied, setCopied] = useState(false)
+  const onCopy = async (e) => {
+    e.preventDefault()
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {}
+  }
   return (
-    <div className="flex gap-3 items-start py-2.5 border-b border-white/10 last:border-0">
-      <div className="flex-shrink-0 w-16 text-xs font-mono text-white/60 pt-0.5">{time}</div>
-      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
-        <Icon size={14} className="text-white" />
+    <button
+      onClick={onCopy}
+      className="group inline-flex items-center gap-1.5 font-mono text-[13px] font-medium text-[var(--color-ink)] bg-[var(--color-paper-2)] hover:bg-[var(--color-paper-3)] border border-[var(--color-line)] px-2.5 py-1 rounded-md transition-colors"
+      aria-label={`Copy ${label || value}`}
+    >
+      {value}
+      <span className="text-[var(--color-ink-muted)] group-hover:text-[var(--color-clay)] transition-colors">
+        {copied ? <Check size={12} /> : <Copy size={12} />}
+      </span>
+    </button>
+  )
+}
+
+function Counter({ to, duration = 1.4 }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-40px' })
+  const [val, setVal] = useState(0)
+  useEffect(() => {
+    if (!inView) return
+    const start = performance.now()
+    const tick = (t) => {
+      const p = Math.min((t - start) / (duration * 1000), 1)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setVal(Math.round(eased * to))
+      if (p < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [inView, to, duration])
+  return <span ref={ref}>{val}</span>
+}
+
+function TimelineItem({ time, icon: Icon, label, detail, tag, mapUrl, dark = false }) {
+  const muted = dark ? 'text-white/55' : 'text-[var(--color-ink-muted)]'
+  const ink = dark ? 'text-white' : 'text-[var(--color-ink)]'
+  const bubble = dark ? 'bg-white/10 border-white/15' : 'bg-[var(--color-paper-2)] border-[var(--color-line)]'
+  const link = dark ? 'text-[var(--color-clay-soft)] hover:text-white' : 'text-[var(--color-clay-deep)] hover:text-[var(--color-clay)]'
+  const border = dark ? 'border-white/10' : 'border-[var(--color-line)]/60'
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -8 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: '-30px' }}
+      transition={{ duration: 0.4 }}
+      className={`flex gap-3 items-start py-3 border-b last:border-0 ${border}`}
+    >
+      <div className={`flex-shrink-0 w-14 text-[11px] font-mono ${muted} pt-1 tabular-nums`}>{time}</div>
+      <div className={`flex-shrink-0 w-8 h-8 rounded-full ${bubble} border flex items-center justify-center`}>
+        <Icon size={14} className={dark ? 'text-white' : 'text-[var(--color-clay)]'} />
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 pt-0.5">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-semibold text-white leading-snug">{label}</span>
-          {tag && <Tag color={tagColor}>{tag}</Tag>}
+          <span className={`text-[14px] font-semibold leading-snug ${ink}`}>{label}</span>
+          {tag && <Tag>{tag}</Tag>}
         </div>
-        {detail && <p className="text-xs text-white/65 mt-0.5 leading-relaxed">{detail}</p>}
+        {detail && <p className={`text-[13px] mt-0.5 leading-relaxed ${muted}`}>{detail}</p>}
         {mapUrl && (
           <a
             href={mapUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-sky-300 hover:text-sky-100 mt-0.5 transition-colors"
+            className={`inline-flex items-center gap-1 text-[11px] font-medium mt-1 transition-colors ${link}`}
           >
             <MapPin size={10} /> View on map
           </a>
         )}
       </div>
-    </div>
-  )
-}
-
-function DayCard({ day, date, title, subtitle, bg, items, accent = 'from-slate-900/80' }) {
-  return (
-    <motion.div
-      variants={fadeUp}
-      className="rounded-3xl overflow-hidden shadow-xl relative"
-      style={{ minHeight: 380 }}
-    >
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${bg})` }}
-      />
-      <div className={`absolute inset-0 bg-gradient-to-b ${accent} to-slate-950/95`} />
-      <div className="relative z-10 p-6 md:p-8 flex flex-col h-full">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-white/50">
-              {day}
-            </span>
-            <h3 className="text-xl md:text-2xl font-bold text-white mt-0.5 leading-tight">
-              {title}
-            </h3>
-            {subtitle && <p className="text-sm text-white/60 mt-1">{subtitle}</p>}
-          </div>
-          <div className="text-right">
-            <span className="text-xs font-semibold bg-white/15 text-white px-3 py-1 rounded-full">
-              {date}
-            </span>
-          </div>
-        </div>
-        <div className="flex-1">
-          {items.map((item, i) => (
-            <TimelineItem key={i} {...item} />
-          ))}
-        </div>
-      </div>
     </motion.div>
   )
 }
 
-function StatCard({ icon: Icon, value, label, color }) {
-  return (
-    <motion.div
-      variants={fadeUp}
-      className="bg-white rounded-2xl shadow-md p-5 flex flex-col items-center text-center gap-2 border border-slate-100"
-    >
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
-        <Icon size={22} className="text-white" />
-      </div>
-      <div className="text-3xl font-extrabold text-slate-800">{value}</div>
-      <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</div>
-    </motion.div>
-  )
-}
-
-function MapStop({ label, icon: Icon, mapUrl }) {
-  return (
-    <a
-      href={mapUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center gap-2 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:text-blue-700 transition-all shadow-sm group"
-    >
-      <Icon size={15} className="text-blue-500 group-hover:text-blue-600 flex-shrink-0" />
-      {label}
-    </a>
-  )
-}
-
-function FlightRow({ label, value, mono = false }) {
-  return (
-    <div className="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
-      <span className="text-sm text-slate-500">{label}</span>
-      <span className={`text-sm font-semibold text-slate-800 ${mono ? 'font-mono' : ''}`}>
-        {value}
-      </span>
-    </div>
-  )
-}
+/* ────────────────────────────────────────────────────────────────
+   APP
+   ──────────────────────────────────────────────────────────────── */
 
 export default function App() {
   const itineraryRef = useRef(null)
+  const mapRef = useRef(null)
+  const logRef = useRef(null)
+  const tipsRef = useRef(null)
+  const [activeDay, setActiveDay] = useState('d1')
+  const [hoveredStop, setHoveredStop] = useState(null)
 
-  const scrollToItinerary = () =>
-    itineraryRef.current?.scrollIntoView({ behavior: 'smooth' })
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 })
+
+  const scrollTo = (ref) => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActiveDay(e.target.dataset.day)
+        })
+      },
+      { rootMargin: '-40% 0px -55% 0px' }
+    )
+    document.querySelectorAll('[data-day]').forEach((el) => obs.observe(el))
+    return () => obs.disconnect()
+  }, [])
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      {/* ── HERO ── */}
-      <section className="relative h-screen min-h-[600px] flex flex-col items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center scale-105"
-          style={{ backgroundImage: `url(${UNSPLASH.hero})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-900/50 to-slate-950/80" />
+    <div className="min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]">
+      {/* ── SCROLL PROGRESS BAR ── */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[3px] bg-[var(--color-clay)] origin-left z-50"
+        style={{ scaleX }}
+      />
 
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={stagger}
-          className="relative z-10 text-center px-4 max-w-3xl mx-auto"
-        >
-          <motion.div variants={fadeUp}>
-            <span className="inline-block bg-white/15 backdrop-blur-sm border border-white/25 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
-              Greece Trip · May 2–6
-            </span>
-          </motion.div>
-
-          <motion.h1
-            variants={fadeUp}
-            className="text-5xl md:text-7xl font-extrabold text-white leading-none tracking-tight mb-4"
-          >
-            Athens
-            <span className="block text-sky-300">Adventure</span>
-          </motion.h1>
-
-          <motion.p
-            variants={fadeUp}
-            className="text-white/75 text-lg md:text-xl max-w-xl mx-auto leading-relaxed mb-10"
-          >
-            Morning runs, hilltop viewpoints, coastal swims, Acropolis culture,
-            sunset dinners and the Aegean island connection.
-          </motion.p>
-
-          <motion.div variants={fadeUp} className="flex flex-wrap gap-3 justify-center">
-            <button
-              onClick={scrollToItinerary}
-              className="bg-white text-slate-900 font-bold px-7 py-3 rounded-full shadow-lg hover:bg-sky-50 transition-all"
-            >
-              View Itinerary
-            </button>
-            <a
-              href={MAPS.fullRoute}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-white/15 backdrop-blur-sm border border-white/30 text-white font-bold px-7 py-3 rounded-full hover:bg-white/25 transition-all"
-            >
-              Open Trip Map
-            </a>
-          </motion.div>
-        </motion.div>
-
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, y: [0, 8, 0] }}
-          transition={{ delay: 1.2, duration: 2, repeat: Infinity }}
-          onClick={scrollToItinerary}
-          className="absolute bottom-8 z-10 text-white/60 hover:text-white transition-colors"
-          aria-label="Scroll down"
-        >
-          <ChevronDown size={32} />
-        </motion.button>
-      </section>
-
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 space-y-20">
-        {/* ── STATS ── */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          variants={stagger}
-        >
-          <motion.h2 variants={fadeUp} className="text-2xl font-bold text-slate-800 mb-6 text-center">
-            Trip at a Glance
-          </motion.h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard icon={Footprints} value="3" label="Morning Runs" color="bg-emerald-500" />
-            <StatCard icon={Mountain} value="4" label="Major Viewpoints" color="bg-violet-500" />
-            <StatCard icon={Utensils} value="2" label="Booked Dinners" color="bg-amber-500" />
-            <StatCard icon={Sun} value="1" label="Epic Coastal Sunset" color="bg-rose-500" />
-          </div>
-        </motion.section>
-
-        {/* ── MAP SECTION ── */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          variants={stagger}
-        >
-          <motion.div variants={fadeUp} className="mb-6">
-            <h2 className="text-2xl font-bold text-slate-800">Trip Map</h2>
-            <p className="text-slate-500 mt-1">Key stops across the Athens area and beyond.</p>
-          </motion.div>
-
-          <motion.div
-            variants={fadeUp}
-            className="relative rounded-3xl overflow-hidden shadow-xl mb-6"
-            style={{ height: 280 }}
-          >
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${UNSPLASH.map})` }}
-            />
-            <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center">
-              <a
-                href={MAPS.fullRoute}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white text-slate-900 font-bold px-8 py-3 rounded-full shadow-lg hover:bg-sky-50 transition-all flex items-center gap-2"
+      {/* ── STICKY NAV ── */}
+      <nav className="sticky top-0 z-40 backdrop-blur-md bg-[var(--color-paper)]/80 border-b border-[var(--color-line)]/50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 h-14 flex items-center justify-between gap-4">
+          <a href="#top" className="font-serif text-lg font-semibold tracking-tight flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[var(--color-clay)]" />
+            Athens · May 2–6
+          </a>
+          <div className="hidden md:flex items-center gap-1">
+            {[
+              ['Itinerary', itineraryRef],
+              ['Map', mapRef],
+              ['Logistics', logRef],
+              ['Tips', tipsRef],
+            ].map(([label, ref]) => (
+              <button
+                key={label}
+                onClick={() => scrollTo(ref)}
+                className="text-[13px] font-medium text-[var(--color-ink-soft)] hover:text-[var(--color-clay)] px-3 py-1.5 rounded-full hover:bg-[var(--color-paper-2)] transition-colors"
               >
-                <MapPin size={18} className="text-rose-500" />
-                Open Full Route in Google Maps
-              </a>
+                {label}
+              </button>
+            ))}
+          </div>
+          <a
+            href={MAPS.fullRoute}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex items-center gap-1.5 text-[13px] font-semibold bg-[var(--color-ink)] text-[var(--color-paper)] px-3.5 py-1.5 rounded-full hover:bg-[var(--color-clay)] transition-colors"
+          >
+            Trip map <ArrowRight size={13} />
+          </a>
+        </div>
+      </nav>
+
+      {/* ── HERO ── */}
+      <section id="top" className="relative">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-12 md:pt-20 pb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="grid md:grid-cols-12 gap-8 items-end"
+          >
+            <div className="md:col-span-7">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-ink-muted)]">
+                  Greece Trip · Spring 2026
+                </span>
+                <span className="h-px flex-1 bg-[var(--color-line)]" />
+              </div>
+              <h1 className="font-serif text-[58px] md:text-[96px] leading-[0.92] tracking-[-0.03em] font-medium">
+                Athens
+                <br />
+                <span className="italic font-light text-[var(--color-clay)]">adventure</span>
+                <span className="text-[var(--color-clay)]">.</span>
+              </h1>
+              <p className="mt-7 text-[17px] md:text-[19px] text-[var(--color-ink-soft)] leading-[1.55] max-w-xl">
+                Morning runs through ancient marble. Hilltop viewpoints at golden hour.
+                Coastal swims in turquoise water. The Acropolis up close, sunset dinners,
+                and the Aegean island connection.
+              </p>
+              <div className="mt-9 flex flex-wrap gap-3">
+                <button
+                  onClick={() => scrollTo(itineraryRef)}
+                  className="group inline-flex items-center gap-2 bg-[var(--color-ink)] text-[var(--color-paper)] font-semibold text-[14px] px-6 py-3.5 rounded-full hover:bg-[var(--color-clay)] transition-all"
+                >
+                  View itinerary
+                  <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
+                </button>
+                <a
+                  href={MAPS.fullRoute}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-transparent border border-[var(--color-ink)]/20 text-[var(--color-ink)] font-semibold text-[14px] px-6 py-3.5 rounded-full hover:border-[var(--color-clay)] hover:text-[var(--color-clay)] transition-all"
+                >
+                  <MapPin size={15} /> Open trip map
+                </a>
+              </div>
+            </div>
+
+            <div className="md:col-span-5 relative">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.9, delay: 0.2 }}
+                className="relative aspect-[4/5] rounded-[28px] overflow-hidden ink-shadow"
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-center scale-110"
+                  style={{ backgroundImage: `url(${IMG.hero})` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink)]/40 via-transparent to-transparent" />
+                <div className="absolute bottom-5 left-5 right-5 text-[var(--color-paper)]">
+                  <div className="text-[10px] font-mono uppercase tracking-[0.2em] opacity-80 mb-1">
+                    Featured viewpoint
+                  </div>
+                  <div className="font-serif text-2xl leading-tight">Cape Sounion at sunset</div>
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.5 }}
+                className="absolute -left-4 -top-4 md:-left-8 md:-top-6 bg-[var(--color-paper-2)] border border-[var(--color-line)] rounded-2xl px-4 py-3 ink-shadow rotate-[-3deg]"
+              >
+                <div className="text-[10px] font-mono uppercase tracking-widest text-[var(--color-ink-muted)]">Duration</div>
+                <div className="font-serif text-2xl leading-tight">5 days</div>
+              </motion.div>
             </div>
           </motion.div>
 
-          <motion.div variants={stagger} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+          {/* STATS */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-50px' }}
+            variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
+            className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--color-line)]/70 rounded-2xl overflow-hidden border border-[var(--color-line)]"
+          >
             {[
-              { label: 'Acropolis Museum', icon: Camera, mapUrl: MAPS.acropolis },
-              { label: 'Philopappos Hill', icon: Mountain, mapUrl: MAPS.philopappos },
-              { label: 'Lycabettus Hill', icon: Mountain, mapUrl: MAPS.lycabettus },
-              { label: 'Lake Vouliagmeni', icon: Waves, mapUrl: MAPS.vouliagmeni },
-              { label: 'Temple of Poseidon', icon: Sun, mapUrl: MAPS.sounion },
-              { label: 'Sense Restaurant', icon: Utensils, mapUrl: MAPS.sense },
-              { label: 'Aerides Plaka', icon: Utensils, mapUrl: MAPS.aerides },
-              { label: 'Panathenaic Stadium', icon: Star, mapUrl: MAPS.stadium },
-            ].map((stop) => (
-              <motion.div key={stop.label} variants={fadeUp}>
-                <MapStop {...stop} />
+              { v: 3, l: 'Morning runs', icon: Footprints },
+              { v: 4, l: 'Major viewpoints', icon: Mountain },
+              { v: 2, l: 'Booked dinners', icon: Utensils },
+              { v: 1, l: 'Epic coastal sunset', icon: Sun },
+            ].map((s) => (
+              <motion.div
+                key={s.l}
+                variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}
+                className="bg-[var(--color-paper)] hover:bg-[var(--color-paper-2)] transition-colors p-5 md:p-6 group"
+              >
+                <s.icon size={18} className="text-[var(--color-clay)] mb-3 group-hover:scale-110 transition-transform" />
+                <div className="font-serif text-5xl md:text-6xl leading-none tracking-tight">
+                  <Counter to={s.v} />
+                </div>
+                <div className="mt-2 text-[12px] font-mono uppercase tracking-[0.1em] text-[var(--color-ink-muted)]">
+                  {s.l}
+                </div>
               </motion.div>
             ))}
           </motion.div>
-        </motion.section>
+        </div>
+      </section>
 
-        {/* ── ITINERARY ── */}
-        <section ref={itineraryRef}>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
-            variants={fadeUp}
-            className="mb-6"
-          >
-            <h2 className="text-2xl font-bold text-slate-800">Day-by-Day Schedule</h2>
-            <p className="text-slate-500 mt-1">Five days of culture, movement, and Mediterranean magic.</p>
-          </motion.div>
+      {/* ── ITINERARY ── */}
+      <section ref={itineraryRef} className="relative">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-20">
+          <SectionHeading
+            kicker="01 — The schedule"
+            title="Five days, mile by mile"
+            description="Tap a day to jump to it. Each card opens onto a full timeline with map links."
+          />
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
-            variants={stagger}
-            className="grid md:grid-cols-2 gap-6"
-          >
-            {/* DAY 1 – May 2 */}
-            <DayCard
-              day="Day 1"
-              date="May 2"
-              title="Arrival & First Steps"
-              subtitle="Athens welcomes you"
-              bg={UNSPLASH.day2}
-              accent="from-indigo-950/85"
-              items={[
-                {
-                  time: '11:35',
-                  icon: Plane,
-                  label: 'Land at Athens Airport',
-                  detail: 'Flight A3855 · Aegean Geneva → Athens',
-                  tag: 'Flight',
-                  tagColor: 'blue',
-                  mapUrl: 'https://maps.google.com/?q=Athens+International+Airport',
-                },
-                {
-                  time: 'Afternoon',
-                  icon: MapPin,
-                  label: 'Plaka + Anafiotika Walk',
-                  detail: 'Wander the oldest neighbourhood and the island-village hidden on the Acropolis slope.',
-                  tag: 'Walk',
-                  tagColor: 'green',
-                  mapUrl: MAPS.plaka,
-                },
-                {
-                  time: '18:00',
-                  icon: Mountain,
-                  label: 'Philopappos Hill Sunset',
-                  detail: 'Golden hour hike with direct Acropolis views.',
-                  tag: 'Viewpoint',
-                  tagColor: 'amber',
-                  mapUrl: MAPS.philopappos,
-                },
-                {
-                  time: '19:00',
-                  icon: Utensils,
-                  label: 'Dinner at Sense',
-                  detail: 'Booked. Modern Greek cuisine.',
-                  tag: 'Booked',
-                  tagColor: 'rose',
-                  mapUrl: MAPS.sense,
-                },
-              ]}
-            />
-
-            {/* DAY 2 – May 3 */}
-            <DayCard
-              day="Day 2"
-              date="May 3"
-              title="Culture & the Acropolis"
-              subtitle="Running, ruins, and rooftop drinks"
-              bg={UNSPLASH.day3}
-              accent="from-sky-950/85"
-              items={[
-                {
-                  time: '07:00',
-                  icon: Footprints,
-                  label: 'Morning Run ~5–7 km',
-                  detail: 'National Garden → Panathenaic Stadium → Acropolis perimeter loop.',
-                  tag: 'Run',
-                  tagColor: 'green',
-                  mapUrl: MAPS.stadium,
-                },
-                {
-                  time: 'Late AM',
-                  icon: Camera,
-                  label: 'Acropolis Museum',
-                  detail: 'World-class exhibition of Parthenon treasures.',
-                  tag: 'Culture',
-                  tagColor: 'purple',
-                  mapUrl: MAPS.acropolis,
-                },
-                {
-                  time: '16:45',
-                  icon: Star,
-                  label: 'Acropolis Tour',
-                  detail: 'Guided visit until 18:45. Booked.',
-                  tag: 'Booked',
-                  tagColor: 'rose',
-                  mapUrl: 'https://maps.google.com/?q=Acropolis+Athens',
-                },
-                {
-                  time: '19:30',
-                  icon: Utensils,
-                  label: 'Dinner at Aerides Plaka',
-                  detail: 'Booked. Classic Plaka setting with Acropolis views.',
-                  tag: 'Booked',
-                  tagColor: 'rose',
-                  mapUrl: MAPS.aerides,
-                },
-                {
-                  time: 'After',
-                  icon: Star,
-                  label: 'Brettos Bar or rooftop drinks',
-                  detail: "Optional. Athens' oldest distillery is steps away.",
-                  tag: 'Optional',
-                  tagColor: 'sky',
-                  mapUrl: MAPS.brettos,
-                },
-              ]}
-            />
-
-            {/* DAY 3 – May 4 – ADVENTURE DAY full-width */}
-            <motion.div variants={fadeUp} className="md:col-span-2">
-              <div
-                className="rounded-3xl overflow-hidden shadow-2xl relative"
-                style={{ minHeight: 440 }}
-              >
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${UNSPLASH.day4})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-950/90 via-slate-900/80 to-slate-950/95" />
-                <div className="relative z-10 p-6 md:p-10">
-                  <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
-                    <div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-amber-400">
-                        Day 3 · The Big One
-                      </span>
-                      <h3 className="text-2xl md:text-3xl font-extrabold text-white mt-1">
-                        Athens Riviera & Cape Sounion
-                      </h3>
-                      <p className="text-white/60 mt-1">
-                        Mountain run → coastal swim → breathtaking temple sunset
-                      </p>
-                    </div>
-                    <span className="text-sm font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-4 py-1.5 rounded-full">
-                      May 4 · Adventure Day
-                    </span>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-x-10">
-                    {[
-                      {
-                        time: '06:30',
-                        icon: Mountain,
-                        label: 'Lycabettus Hill Run/Climb',
-                        detail: 'Highest point in Athens. Watch the city wake up.',
-                        tag: 'Run',
-                        tagColor: 'green',
-                        mapUrl: MAPS.lycabettus,
-                      },
-                      {
-                        time: 'Morning',
-                        icon: Waves,
-                        label: 'Athens Riviera Drive',
-                        detail: 'Head south along the coast towards Vouliagmeni.',
-                        tag: 'Scenic',
-                        tagColor: 'sky',
-                      },
-                      {
-                        time: 'Late AM',
-                        icon: Waves,
-                        label: 'Lake Vouliagmeni',
-                        detail: 'Thermal lake fed by underground springs. Swim or kayak.',
-                        tag: 'Swim',
-                        tagColor: 'blue',
-                        mapUrl: MAPS.vouliagmeni,
-                      },
-                      {
-                        time: 'Noon',
-                        icon: Utensils,
-                        label: 'Seaside Lunch',
-                        detail: 'Fresh fish on the Riviera waterfront.',
-                        tag: 'Food',
-                        tagColor: 'amber',
-                      },
-                      {
-                        time: '16:00',
-                        icon: Sun,
-                        label: '★ Temple of Poseidon Sunset',
-                        detail: 'Cape Sounion — the crown jewel of the trip. 65 km south of Athens.',
-                        tag: 'Must-do',
-                        tagColor: 'rose',
-                        mapUrl: MAPS.sounion,
-                      },
-                    ].map((item, i) => (
-                      <TimelineItem key={i} {...item} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* DAY 4 – May 5 */}
-            <DayCard
-              day="Day 4"
-              date="May 5"
-              title="Last Morning & Ferry"
-              subtitle="Farewell Athens → Hello Mykonos"
-              bg={UNSPLASH.day5}
-              accent="from-teal-950/85"
-              items={[
-                {
-                  time: '06:00',
-                  icon: Footprints,
-                  label: 'Sunrise Run ~4–5 km',
-                  detail: 'Philopappos Hill + Acropolis loop. Best light of the trip.',
-                  tag: 'Run',
-                  tagColor: 'green',
-                  mapUrl: MAPS.philopappos,
-                },
-                {
-                  time: 'Morning',
-                  icon: MapPin,
-                  label: 'Breakfast in Koukaki or Plaka',
-                  detail: 'Last stroll through the neighbourhood.',
-                  mapUrl: MAPS.koukaki,
-                },
-                {
-                  time: '17:05',
-                  icon: Ship,
-                  label: 'Ferry: Paros → Mykonos',
-                  detail: 'Ref: FH52UX3636VY. Book hotel in Mykonos.',
-                  tag: 'Ferry',
-                  tagColor: 'blue',
-                },
-              ]}
-            />
-
-            {/* DAY 5 – May 6 */}
-            <DayCard
-              day="Day 5"
-              date="May 6"
-              title="Mykonos → Geneva"
-              subtitle="Island morning, homeward flights"
-              bg={UNSPLASH.day6}
-              accent="from-rose-950/80"
-              items={[
-                {
-                  time: '08:55',
-                  icon: Plane,
-                  label: 'Mykonos → Athens',
-                  detail: 'Aegean Airlines A3373',
-                  tag: 'Flight',
-                  tagColor: 'blue',
-                },
-                {
-                  time: '10:40',
-                  icon: Plane,
-                  label: 'Athens → Geneva',
-                  detail: 'EasyJet U21472 · Athens Intl Airport',
-                  tag: 'Flight',
-                  tagColor: 'blue',
-                  mapUrl: 'https://maps.google.com/?q=Athens+International+Airport',
-                },
-              ]}
-            />
-          </motion.div>
-        </section>
-
-        {/* ── FLIGHTS & LOGISTICS ── */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          variants={stagger}
-        >
-          <motion.div variants={fadeUp} className="mb-6">
-            <h2 className="text-2xl font-bold text-slate-800">Flights & Logistics</h2>
-            <p className="text-slate-500 mt-1">All reference numbers in one place.</p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-4">
-            {/* Outbound */}
-            <motion.div
-              variants={fadeUp}
-              className="bg-white rounded-2xl shadow-md border border-slate-100 p-5"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Plane size={16} className="text-blue-600" />
-                </div>
-                <h3 className="font-bold text-slate-800">Outbound · May 2</h3>
-              </div>
-              <FlightRow label="Flight" value="A3855" mono />
-              <FlightRow label="Route" value="Geneva → Athens" />
-              <FlightRow label="Arrival" value="11:35" />
-              <FlightRow label="Airport" value="Eleftherios Venizelos" />
-              <FlightRow label="Check-in Somerset" value="ABHNM5" mono />
-              <FlightRow label="Check-in Remy" value="A3855" mono />
-            </motion.div>
-
-            {/* Return */}
-            <motion.div
-              variants={fadeUp}
-              className="bg-white rounded-2xl shadow-md border border-slate-100 p-5"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center">
-                  <Plane size={16} className="text-rose-600 rotate-180" />
-                </div>
-                <h3 className="font-bold text-slate-800">Return · May 6</h3>
-              </div>
-              <FlightRow label="Leg 1" value="A3373 MYK→ATH" mono />
-              <FlightRow label="Departure" value="08:55" />
-              <FlightRow label="Leg 2" value="U21472 ATH→GVA" mono />
-              <FlightRow label="Departure" value="10:40" />
-              <FlightRow label="Airport" value="Eleftherios Venizelos" />
-              <FlightRow label="Check-in Somerset" value="KC4PBWV" mono />
-              <FlightRow label="Check-in Remy" value="KC4PBWV" mono />
-            </motion.div>
-
-            {/* Ferry */}
-            <motion.div
-              variants={fadeUp}
-              className="bg-white rounded-2xl shadow-md border border-slate-100 p-5"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
-                  <Ship size={16} className="text-teal-600" />
-                </div>
-                <h3 className="font-bold text-slate-800">Ferry · May 5</h3>
-              </div>
-              <FlightRow label="Route" value="Paros → Mykonos" />
-              <FlightRow label="Departure" value="17:05" />
-              <FlightRow label="Reference" value="FH52UX3636VY" mono />
-              <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
-                <strong>Reminder:</strong> Book Mykonos hotel for the night of May 5.
-              </div>
-            </motion.div>
+          {/* Day pills */}
+          <div className="sticky top-14 z-30 -mx-4 sm:-mx-8 px-4 sm:px-8 py-3 mb-6 bg-[var(--color-paper)]/85 backdrop-blur border-b border-[var(--color-line)]/50">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar">
+              {DAYS.map((d) => {
+                const active = activeDay === d.id
+                return (
+                  <button
+                    key={d.id}
+                    onClick={() => {
+                      const el = document.querySelector(`[data-day="${d.id}"]`)
+                      el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }}
+                    className={`flex-shrink-0 group relative px-4 py-2 rounded-full text-[12px] font-semibold tracking-wide transition-all ${
+                      active
+                        ? 'bg-[var(--color-ink)] text-[var(--color-paper)]'
+                        : 'bg-[var(--color-paper-2)] text-[var(--color-ink-soft)] hover:bg-[var(--color-paper-3)]'
+                    }`}
+                  >
+                    <span className="font-mono mr-2 opacity-70">{d.label.replace('Day ', '')}</span>
+                    {d.date}
+                  </button>
+                )
+              })}
+            </div>
           </div>
-        </motion.section>
 
-        {/* ── GUEST TIPS ── */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-80px' }}
-          variants={stagger}
-          className="pb-8"
-        >
-          <motion.div variants={fadeUp} className="mb-6">
-            <h2 className="text-2xl font-bold text-slate-800">Guest Tips</h2>
-            <p className="text-slate-500 mt-1">Everything you need to know before you go.</p>
-          </motion.div>
+          {/* Day cards */}
+          <div className="space-y-6">
+            {DAYS.map((d, idx) => (
+              <DayBlock key={d.id} day={d} index={idx} />
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <div className="grid sm:grid-cols-2 gap-4">
+      {/* ── MAP ── */}
+      <section ref={mapRef} className="relative bg-[var(--color-paper-2)] border-y border-[var(--color-line)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-20">
+          <SectionHeading
+            kicker="02 — Geography"
+            title="Where it all happens"
+            description="Eight key stops across Athens, the Riviera, and Cape Sounion."
+          />
+
+          <div className="grid md:grid-cols-12 gap-6">
+            <motion.a
+              href={MAPS.fullRoute}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="md:col-span-7 relative rounded-3xl overflow-hidden aspect-[4/3] md:aspect-auto md:min-h-[480px] ink-shadow group"
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                style={{ backgroundImage: `url(${IMG.map})` }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-ink)]/35 to-[var(--color-ink)]/65" />
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path
+                  d="M 18 25 Q 30 32, 35 42 T 48 55 Q 60 62, 70 75"
+                  stroke="#F5F1EA"
+                  strokeWidth="0.4"
+                  strokeDasharray="1.2 1.2"
+                  fill="none"
+                  opacity="0.7"
+                />
+              </svg>
+              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-[var(--color-paper)]">
+                <div className="text-[10px] font-mono uppercase tracking-[0.2em] opacity-80 mb-2">
+                  Open in Google Maps
+                </div>
+                <div className="font-serif text-3xl md:text-4xl leading-tight">Full route, eight stops</div>
+                <div className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold opacity-90 group-hover:opacity-100">
+                  Plan your route <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </motion.a>
+
+            <div className="md:col-span-5 grid grid-cols-1 gap-2">
+              {[
+                { label: 'Acropolis Museum', icon: Camera, mapUrl: MAPS.acropolis, day: 'Day 02' },
+                { label: 'Philopappos Hill', icon: Mountain, mapUrl: MAPS.philopappos, day: 'Day 01' },
+                { label: 'Lycabettus Hill', icon: Mountain, mapUrl: MAPS.lycabettus, day: 'Day 03' },
+                { label: 'Lake Vouliagmeni', icon: Waves, mapUrl: MAPS.vouliagmeni, day: 'Day 03' },
+                { label: 'Temple of Poseidon', icon: Sun, mapUrl: MAPS.sounion, day: 'Day 03 ★' },
+                { label: 'Sense Restaurant', icon: Utensils, mapUrl: MAPS.sense, day: 'Day 01' },
+                { label: 'Aerides Plaka', icon: Utensils, mapUrl: MAPS.aerides, day: 'Day 02' },
+                { label: 'Panathenaic Stadium', icon: Star, mapUrl: MAPS.stadium, day: 'Day 02' },
+              ].map((s, i) => (
+                <motion.a
+                  key={s.label}
+                  href={s.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onMouseEnter={() => setHoveredStop(s.label)}
+                  onMouseLeave={() => setHoveredStop(null)}
+                  initial={{ opacity: 0, x: 12 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.04 }}
+                  className="group flex items-center gap-3 px-4 py-3 bg-[var(--color-paper)] hover:bg-[var(--color-paper-3)] border border-[var(--color-line)] rounded-xl transition-all hover:border-[var(--color-clay)]/40"
+                >
+                  <div className="w-9 h-9 rounded-full bg-[var(--color-paper-3)] group-hover:bg-[var(--color-clay)] group-hover:text-[var(--color-paper)] text-[var(--color-clay)] flex items-center justify-center transition-colors">
+                    <s.icon size={15} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[14px] font-semibold leading-tight">{s.label}</div>
+                    <div className="text-[11px] font-mono text-[var(--color-ink-muted)] mt-0.5">
+                      {s.day}
+                    </div>
+                  </div>
+                  <ArrowRight size={14} className="text-[var(--color-ink-muted)] group-hover:text-[var(--color-clay)] group-hover:translate-x-0.5 transition-all" />
+                </motion.a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── LOGISTICS ── */}
+      <section ref={logRef} className="relative">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-20">
+          <SectionHeading
+            kicker="03 — Logistics"
+            title="Flights, ferry, references"
+            description="Tap any reference code to copy it instantly."
+          />
+
+          <div className="grid md:grid-cols-3 gap-5">
+            <LogCard icon={Plane} accent="azure" label="Outbound" date="May 2">
+              <Row k="Flight" v={<span className="font-mono">A3855</span>} />
+              <Row k="Route" v="Geneva → Athens" />
+              <Row k="Arrival" v="11:35" />
+              <Row k="Airport" v="Eleftherios Venizelos" />
+              <RowCopy k="Check-in · Somerset" code="ABHNM5" />
+              <RowCopy k="Check-in · Remy" code="A3855" />
+            </LogCard>
+
+            <LogCard icon={Plane} accent="clay" label="Return" date="May 6" iconRotate>
+              <Row k="Leg 1" v={<span className="font-mono">A3373 · MYK → ATH</span>} />
+              <Row k="Departure" v="08:55" />
+              <Row k="Leg 2" v={<span className="font-mono">U21472 · ATH → GVA</span>} />
+              <Row k="Departure" v="10:40" />
+              <RowCopy k="Check-in · Somerset" code="KC4PBWV" />
+              <RowCopy k="Check-in · Remy" code="KC4PBWV" />
+            </LogCard>
+
+            <LogCard icon={Ship} accent="olive" label="Ferry" date="May 5">
+              <Row k="Route" v="Paros → Mykonos" />
+              <Row k="Departure" v="17:05" />
+              <RowCopy k="Reference" code="FH52UX3636VY" />
+              <div className="mt-4 p-3.5 bg-[var(--color-clay)]/10 border border-[var(--color-clay)]/25 rounded-xl">
+                <div className="flex items-start gap-2">
+                  <Info size={14} className="text-[var(--color-clay-deep)] mt-0.5 flex-shrink-0" />
+                  <p className="text-[12px] leading-relaxed text-[var(--color-ink-soft)]">
+                    <strong className="text-[var(--color-ink)]">Reminder.</strong> Book a hotel in Mykonos for the night of May 5.
+                  </p>
+                </div>
+              </div>
+            </LogCard>
+          </div>
+        </div>
+      </section>
+
+      {/* ── TIPS ── */}
+      <section ref={tipsRef} className="relative bg-[var(--color-ink)] text-[var(--color-paper)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-24">
+          <div className="mb-12">
+            <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-clay-soft)] mb-3">
+              04 — Before you go
+            </div>
+            <h2 className="font-serif text-4xl md:text-6xl leading-[0.95] tracking-tight">
+              Eight things <span className="italic font-light text-[var(--color-clay-soft)]">to know</span>.
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              {
-                icon: Footprints,
-                color: 'bg-emerald-50 border-emerald-200',
-                iconColor: 'text-emerald-600',
-                title: 'Running Shoes',
-                body: 'Bring trail or hybrid running shoes with good grip — Philopappos and Lycabettus paths are uneven cobblestone.',
-              },
-              {
-                icon: Sun,
-                color: 'bg-amber-50 border-amber-200',
-                iconColor: 'text-amber-600',
-                title: 'Beat the Heat',
-                body: 'Morning runs start early (6–7am) to avoid both heat and crowds. Temperatures rise quickly in May.',
-              },
-              {
-                icon: Waves,
-                color: 'bg-sky-50 border-sky-200',
-                iconColor: 'text-sky-600',
-                title: 'May 4 — Adventure Day',
-                body: 'Pack swimwear, sunscreen, a light layer for the breeze at Cape Sounion, and comfortable walking shoes.',
-              },
-              {
-                icon: Star,
-                color: 'bg-rose-50 border-rose-200',
-                iconColor: 'text-rose-600',
-                title: 'Temple of Poseidon',
-                body: 'Cape Sounion sunset is the must-do highlight of the trip. Arrive 45 min before sunset for the best light.',
-              },
-              {
-                icon: Info,
-                color: 'bg-violet-50 border-violet-200',
-                iconColor: 'text-violet-600',
-                title: 'Acropolis Tickets',
-                body: 'Entry is included in the guided tour booking. Bring ID. No large bags allowed inside.',
-              },
-              {
-                icon: Wind,
-                color: 'bg-slate-50 border-slate-200',
-                iconColor: 'text-slate-600',
-                title: 'Ferry Essentials',
-                body: 'Arrive at the port at least 45 minutes before departure. Keep the ferry reference handy: FH52UX3636VY.',
-              },
-              {
-                icon: Ticket,
-                color: 'bg-indigo-50 border-indigo-200',
-                iconColor: 'text-indigo-600',
-                title: 'Check-in Reminder',
-                body: 'Somerset: ABHNM5 (outbound) / KC4PBWV (return). Remy: A3855 (outbound) / KC4PBWV (return).',
-              },
-              {
-                icon: MapPin,
-                color: 'bg-teal-50 border-teal-200',
-                iconColor: 'text-teal-600',
-                title: 'Base Neighbourhood',
-                body: 'Koukaki is the ideal base — 10 min walk to the Acropolis, packed with cafés and local restaurants.',
-              },
-            ].map((tip) => (
+              { icon: Footprints, title: 'Running shoes', body: 'Bring trail or hybrid shoes with grip — Philopappos and Lycabettus paths are uneven cobblestone.' },
+              { icon: Sunrise, title: 'Beat the heat', body: 'Morning runs start at 6–7 am to avoid heat and crowds. May warms up fast.' },
+              { icon: Waves, title: 'May 4 essentials', body: 'Swimwear, sunscreen, a light layer for the breeze at Cape Sounion, comfortable walking shoes.' },
+              { icon: Star, title: 'Sounion sunset', body: 'The crown jewel of the trip. Arrive 45 minutes before sunset for the best light on the columns.' },
+              { icon: Ticket, title: 'Acropolis ticket', body: 'Entry is included in your guided tour. Bring photo ID. No large bags inside.' },
+              { icon: Wind, title: 'Ferry boarding', body: 'Arrive at the port 45 minutes before departure. Reference: FH52UX3636VY.' },
+              { icon: MapPin, title: 'Stay in Koukaki', body: 'Ten minutes from the Acropolis, packed with cafés and local restaurants.' },
+              { icon: Sparkles, title: 'Bonus tip', body: 'Brettos in Plaka is the oldest distillery in Athens — try a thyme liqueur after dinner.' },
+            ].map((tip, i) => (
               <motion.div
                 key={tip.title}
-                variants={fadeUp}
-                className={`flex gap-4 p-4 rounded-2xl border ${tip.color}`}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-30px' }}
+                transition={{ delay: i * 0.05 }}
+                className="group relative p-5 rounded-2xl border border-white/10 hover:border-[var(--color-clay)]/60 hover:bg-white/5 transition-all"
               >
-                <div className={`flex-shrink-0 mt-0.5 ${tip.iconColor}`}>
-                  <tip.icon size={20} />
+                <div className="w-10 h-10 rounded-full bg-[var(--color-clay)]/20 group-hover:bg-[var(--color-clay)] text-[var(--color-clay-soft)] group-hover:text-[var(--color-paper)] flex items-center justify-center mb-4 transition-colors">
+                  <tip.icon size={17} />
                 </div>
-                <div>
-                  <h4 className="font-bold text-slate-800 text-sm">{tip.title}</h4>
-                  <p className="text-slate-600 text-sm mt-0.5 leading-relaxed">{tip.body}</p>
-                </div>
+                <h4 className="font-serif text-xl leading-tight">{tip.title}</h4>
+                <p className="mt-2 text-[13px] leading-relaxed text-white/70">{tip.body}</p>
               </motion.div>
             ))}
           </div>
-        </motion.section>
-      </div>
+        </div>
+      </section>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-slate-900 text-white/50 text-center text-xs py-6">
-        Athens Adventure · May 2–6 &nbsp;·&nbsp; Safe travels ✈
+      <footer className="bg-[var(--color-paper-2)] border-t border-[var(--color-line)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-10 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[var(--color-clay)]" />
+            <span className="font-serif text-lg font-medium">Athens Adventure</span>
+            <span className="text-[var(--color-ink-muted)] text-sm">· May 2–6</span>
+          </div>
+          <div className="text-[12px] font-mono uppercase tracking-[0.15em] text-[var(--color-ink-muted)]">
+            Safe travels — καλό ταξίδι
+          </div>
+        </div>
       </footer>
+    </div>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────
+   SUB-COMPONENTS
+   ──────────────────────────────────────────────────────────────── */
+
+function SectionHeading({ kicker, title, description }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="mb-12 max-w-2xl"
+    >
+      <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-clay)] mb-3">
+        {kicker}
+      </div>
+      <h2 className="font-serif text-4xl md:text-6xl leading-[0.95] tracking-tight font-medium">
+        {title}
+        <span className="text-[var(--color-clay)]">.</span>
+      </h2>
+      {description && (
+        <p className="mt-5 text-[var(--color-ink-soft)] text-[16px] leading-relaxed">{description}</p>
+      )}
+    </motion.div>
+  )
+}
+
+function DayBlock({ day, index }) {
+  const [open, setOpen] = useState(true)
+  const isFeature = day.feature
+
+  return (
+    <motion.article
+      data-day={day.id}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.6 }}
+      className={`relative rounded-3xl overflow-hidden border ${
+        isFeature
+          ? 'border-[var(--color-clay)]/30 ink-shadow'
+          : 'border-[var(--color-line)] bg-[var(--color-paper-2)]/40'
+      }`}
+    >
+      <div className="grid md:grid-cols-12">
+        {/* Image side */}
+        <div className={`relative md:col-span-5 ${isFeature ? 'md:col-span-6' : ''} aspect-[5/3] md:aspect-auto md:min-h-[340px]`}>
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${day.img})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[var(--color-ink)]/70 via-[var(--color-ink)]/30 to-transparent" />
+          <div className="absolute top-5 left-5 flex items-center gap-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] bg-[var(--color-paper)]/90 backdrop-blur text-[var(--color-ink)] px-3 py-1 rounded-full">
+              {day.label}
+            </span>
+            {isFeature && (
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] bg-[var(--color-clay)] text-[var(--color-paper)] px-3 py-1 rounded-full flex items-center gap-1">
+                <Sparkles size={10} /> The big one
+              </span>
+            )}
+          </div>
+          <div className="absolute bottom-5 left-5 right-5 text-[var(--color-paper)]">
+            <div className="text-[11px] font-mono uppercase tracking-widest opacity-80">
+              {day.weekday} · {day.date}
+            </div>
+            <h3 className="font-serif text-3xl md:text-4xl leading-tight mt-1">{day.title}</h3>
+            <p className="text-[14px] opacity-85 mt-1">{day.sub}</p>
+          </div>
+        </div>
+
+        {/* Timeline side */}
+        <div className={`md:col-span-7 ${isFeature ? 'md:col-span-6' : ''} p-6 md:p-8 ${
+          isFeature ? 'bg-[var(--color-ink)] text-[var(--color-paper)]' : 'bg-[var(--color-paper)]'
+        }`}>
+          <div className="flex items-center justify-between mb-3">
+            <div className={`text-[11px] font-mono uppercase tracking-[0.15em] ${
+              isFeature ? 'text-[var(--color-clay-soft)]' : 'text-[var(--color-ink-muted)]'
+            }`}>
+              {day.items.length} stops
+            </div>
+            <button
+              onClick={() => setOpen((o) => !o)}
+              className={`text-[11px] font-mono uppercase tracking-wider flex items-center gap-1 px-2 py-1 rounded-md transition-colors ${
+                isFeature ? 'text-white/70 hover:bg-white/10' : 'text-[var(--color-ink-muted)] hover:bg-[var(--color-paper-2)]'
+              }`}
+            >
+              {open ? 'Collapse' : 'Expand'}
+              <ChevronDown size={12} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+          <AnimatePresence initial={false}>
+            {open && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                {day.items.map((it, i) => (
+                  <TimelineItem key={i} {...it} dark={isFeature} />
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </motion.article>
+  )
+}
+
+function LogCard({ icon: Icon, accent, label, date, children, iconRotate }) {
+  const accents = {
+    azure: 'bg-[var(--color-azure)]/15 text-[var(--color-azure)]',
+    clay: 'bg-[var(--color-clay)]/15 text-[var(--color-clay-deep)]',
+    olive: 'bg-[var(--color-olive)]/15 text-[var(--color-olive)]',
+  }
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-30px' }}
+      className="bg-[var(--color-paper-2)] border border-[var(--color-line)] rounded-2xl p-6 ink-shadow hover:border-[var(--color-clay)]/40 transition-colors"
+    >
+      <div className="flex items-center justify-between mb-5">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${accents[accent]}`}>
+          <Icon size={18} className={iconRotate ? 'rotate-180' : ''} />
+        </div>
+        <div className="text-right">
+          <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-[var(--color-ink-muted)]">{label}</div>
+          <div className="font-serif text-lg leading-tight">{date}</div>
+        </div>
+      </div>
+      <div className="space-y-0">{children}</div>
+    </motion.div>
+  )
+}
+
+function Row({ k, v }) {
+  return (
+    <div className="flex items-center justify-between py-2.5 border-b border-[var(--color-line)]/60 last:border-0 gap-3">
+      <span className="text-[12px] text-[var(--color-ink-muted)]">{k}</span>
+      <span className="text-[13px] font-medium text-[var(--color-ink)] text-right">{v}</span>
+    </div>
+  )
+}
+
+function RowCopy({ k, code }) {
+  return (
+    <div className="flex items-center justify-between py-2.5 border-b border-[var(--color-line)]/60 last:border-0 gap-3">
+      <span className="text-[12px] text-[var(--color-ink-muted)]">{k}</span>
+      <CopyChip value={code} label={k} />
     </div>
   )
 }
