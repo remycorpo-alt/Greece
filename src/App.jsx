@@ -129,7 +129,7 @@ const DAYS = [
     dirUrl: 'https://www.google.com/maps/dir/Athens+International+Airport/Koukaki+Athens/Kostas+Souvlaki+Agia+Irini+Athens/Plaka+Athens/Philopappos+Hill+Athens/Sense+Restaurant+Athens',
     items: [
       { time: '11:35', icon: Plane, label: 'Land at Athens Airport', detail: 'Aegean A3855 · Geneva → Athens', tag: 'Flight', mapUrl: MAPS.airport, photo: PHOTOS.airport, place: 'Eleftherios Venizelos' },
-      { time: '13:00', icon: Hotel, label: 'Check in to your Athens hotel', detail: 'Drop bags in Koukaki — your base for three Athens nights, ten minutes from the Acropolis.', tag: 'Hotel', mapUrl: MAPS.hotel, photo: PHOTOS.hotel, place: 'Koukaki, Athens' },
+      { time: '13:00', icon: Hotel, label: 'Check in · Electra Metropolis Hotel', detail: 'Drop bags at the Electra Metropolis — your base for three Athens nights, steps from Syntagma and ten minutes from the Acropolis.', tag: 'Hotel', mapUrl: 'https://maps.google.com/?q=Electra+Metropolis+Hotel+Athens', photo: PHOTOS.hotel, place: 'Electra Metropolis, Athens' },
       { time: '14:00', icon: Utensils, label: 'Souvlaki at Kostas', detail: "Tiny family-run grill on Agia Irini square — pork skewer in pita with paprika oil. Closes when sold out, so come hungry.", tag: 'Street food', mapUrl: MAPS.kostas, photo: PHOTOS.souvlaki, place: 'Kostas · Plateia Agias Irinis' },
       { time: 'PM', icon: MapPin, label: 'Plaka + Anafiotika walk', detail: 'Wander the oldest neighbourhood and the island village hidden on the Acropolis slope.', tag: 'Walk', mapUrl: MAPS.plaka, photo: PHOTOS.plaka, place: 'Plaka, Athens' },
       { time: '18:00', icon: Mountain, label: 'Philopappos Hill at sunset', detail: 'Golden hour with direct Acropolis views.', tag: 'Viewpoint', mapUrl: MAPS.philopappos, photo: PHOTOS.philopappos, place: 'Philopappos Hill' },
@@ -168,7 +168,7 @@ const DAYS = [
     img: IMG.ferry,
     dirUrl: 'https://www.google.com/maps/dir/Piraeus+Port/Parikia+Port+Paros/Naoussa+Paros',
     items: [
-      { time: '07:00', icon: Ship, label: 'Ferry · Athens (Piraeus) → Paros', detail: 'Board the morning ferry from Piraeus and enjoy the Cyclades crossing.', tag: 'Ferry', mapUrl: MAPS.parosPort, photo: PHOTOS.ferry, place: 'Piraeus Port' },
+      { time: '09:00', icon: Ship, label: 'Ferry · Athens (Piraeus) → Paros', detail: 'Board the 09:00 ferry from Piraeus and enjoy the Cyclades crossing.', tag: 'Ferry', mapUrl: MAPS.parosPort, photo: PHOTOS.ferry, place: 'Piraeus Port' },
       { time: '13:00', icon: Hotel, label: 'Arrive Paros & hotel check-in', detail: 'Early afternoon arrival. Transfer to your hotel, drop bags, and settle in.', tag: 'Hotel', mapUrl: MAPS.parosHotel, photo: PHOTOS.hotel, place: 'Naoussa / Parikia' },
       { time: '15:30', icon: Coffee, label: 'Late lunch by the harbour', detail: 'Relaxed first meal in Naoussa with sea views before afternoon exploring.', tag: 'Food', mapUrl: MAPS.naoussa, photo: PHOTOS.seafood, place: 'Naoussa Harbour' },
       { time: '17:30', icon: MapPin, label: 'Naoussa old town walk', detail: 'Whitewashed lanes, Venetian fort, boutiques, and waterfront cafés.', tag: 'Scenic', mapUrl: MAPS.naoussa, photo: PHOTOS.naoussa, place: 'Naoussa, Paros' },
