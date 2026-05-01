@@ -426,7 +426,7 @@ export default function App() {
                 <span className="text-[var(--color-clay)]">.</span>
               </h1>
               <p className="mt-7 text-[17px] md:text-[19px] text-[var(--color-ink-soft)] leading-[1.55] max-w-xl">
-                A special Greece trip with the Jarvis gang — your parent’s girlfriend and the crew.
+                A special Greece trip with the Jarvis gang.
                 Ancient ruins in Athens, Riviera swims, sunset viewpoints, and island crossings
                 across the Aegean.
               </p>
